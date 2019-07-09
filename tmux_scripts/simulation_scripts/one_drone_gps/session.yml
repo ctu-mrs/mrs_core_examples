@@ -38,17 +38,21 @@ windows:
       layout: even-vertical
       panes:
         - 'history -s rosservice call /$UAV_NAME/control_manager/goto \"goal: \[0.0, 10.0, 1.5, 0.0\]\"'
-  - waypoint_flier:
-      layout: even-vertical
-      panes:
-        - waitForControl; roslaunch waypoint_flier simulation.launch
-        - history -s rosservice call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint
-        - history -s rosservice call /$UAV_NAME/waypoint_flier/start_waypoints_following
-        - history -s rosservice call /$UAV_NAME/waypoint_flier/stop_waypoints_following
   - edge_detect:
       layout: even-vertical
       panes:
         - waitForControl; roslaunch vision_example simulation.launch
+  - waypoint_flier:
+      layout: even-vertical
+      panes:
+        - waitforcontrol; roslaunch waypoint_flier simulation.launch
+        - history -s rosservice call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint
+        - history -s rosservice call /$UAV_NAME/waypoint_flier/start_waypoints_following
+        - history -s rosservice call /$uav_name/waypoint_flier/stop_waypoints_following
+  - dynamic_reconfigure:
+      layout: even-vertical
+      panes:
+        - waitForControl; rosrun rqt_reconfigure rqt_reconfigure
   - gazebo_camera_follow:
       layout: even-vertical
       panes:
