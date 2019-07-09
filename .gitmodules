@@ -1,0 +1,6 @@
+[submodule "ros_packages/waypoint_flier"]
+	path = ros_packages/waypoint_flier
+	url = git@mrs.felk.cvut.cz:uav/examples/waypoint_flier.git
+[submodule "ros_packages/vision_example"]
+	path = ros_packages/vision_example
+	url = git@mrs.felk.cvut.cz:uav/examples/vision_example.git
