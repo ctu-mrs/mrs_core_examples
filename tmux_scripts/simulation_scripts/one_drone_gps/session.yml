@@ -19,11 +19,11 @@ windows:
   - spawn:
       layout: even-vertical
       panes:
-        - waitForSimulation; spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-bluefox-wall
+        - waitForSimulation; spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-bluefox-camera
   - control:
       layout: even-vertical
       panes:
-        - waitForOdometry; roslaunch mrs_uav_manager simulation_f550_gps.launch
+        - waitForOdometry; roslaunch mrs_general core.launch
   - takeoff:
       layout: even-vertical
       panes:
@@ -58,7 +58,3 @@ windows:
       panes:
         - waitForControl; roslaunch mrs_testing rviz_uav1.launch
         - waitForControl; roslaunch mrs_rviz_plugins load_f550_robot.launch
-  - layout:
-      layout: even-vertical
-      panes:
-        - waitForControl; sleep 2; ~/.i3/layout_manager.sh simulation
