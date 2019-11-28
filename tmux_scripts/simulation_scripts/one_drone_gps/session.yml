@@ -2,7 +2,7 @@ name: simulation
 root: ./
 
 startup_window: status
-pre_window: export UAV_NAME=uav1
+pre_window: export UAV_NAME=uav1; export RUN_TYPE=simulation; export UAV_TYPE=f550; export ODOMETRY_TYPE=gps
 windows:
   - roscore:
       layout: even-vertical
@@ -19,7 +19,7 @@ windows:
   - spawn:
       layout: even-vertical
       panes:
-        - waitForSimulation; spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-bluefox-camera
+        - waitForSimulation; spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-mobius-camera-front
   - control:
       layout: even-vertical
       panes:
@@ -29,8 +29,8 @@ windows:
       panes:
         #{ uav1
         - 'waitForControl;
-          rosservice call /$UAV_NAME/mavros/cmd/arming 1;
           rosservice call /$UAV_NAME/control_manager/motors 1;
+          rosservice call /$UAV_NAME/mavros/cmd/arming 1;
           rosservice call /$UAV_NAME/mavros/set_mode 0 offboard;
           rosservice call /$UAV_NAME/uav_manager/takeoff'
         #}
@@ -41,14 +41,14 @@ windows:
   - edge_detect:
       layout: even-vertical
       panes:
-        - waitForControl; roslaunch vision_example simulation.launch
+        - waitForControl; roslaunch vision_example vision_example.launch
   - waypoint_flier:
       layout: even-vertical
       panes:
-        - waitforcontrol; roslaunch waypoint_flier simulation.launch
+        - waitForControl; roslaunch waypoint_flier waypoint_flier.launch
         - history -s rosservice call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint
         - history -s rosservice call /$UAV_NAME/waypoint_flier/start_waypoints_following
-        - history -s rosservice call /$uav_name/waypoint_flier/stop_waypoints_following
+        - history -s rosservice call /$UAV_NAME/waypoint_flier/stop_waypoints_following
   - dynamic_reconfigure:
       layout: even-vertical
       panes:
@@ -57,6 +57,7 @@ windows:
       layout: even-vertical
       panes:
         - waitForOdometry; gz camera -c gzclient_camera -f uav1; history -s gz camera -c gzclient_camera -f uav1
+        - waitForControl; sleep 2; ~/.i3/layout_manager.sh layout.json
   - rviz:
       layout: even-vertical
       panes:
