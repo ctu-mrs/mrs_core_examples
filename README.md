@@ -1,8 +1,8 @@
 # Example packages
 
-This repository includes all example packages as submodules.
+This repository includes other examples.
 
 ## Packages
 
-* [waypoint_flier](https://mrs.felk.cvut.cz/gitlab/uav/examples/waypoint_flier)
-* [vision_example](https://mrs.felk.cvut.cz/gitlab/uav/examples/vision_example)
+* [example_ros_uav](https://github.com/ctu-mrs/example_ros_uav) - Example of UAV control
+* [example_ros_vision](https://github.com/ctu-mrs/example_ros_vision) - Example of UAV computer vision
