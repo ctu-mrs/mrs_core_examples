@@ -10,25 +10,26 @@ windows:
   - gazebo:
       layout: even-vertical
       panes:
-        - waitForRos; roslaunch simulation simulation.launch gui:=true
+        - waitForRos; roslaunch mrs_simulation simulation.launch gui:=true
   - status:
       layout: even-vertical
       panes:
-        - waitForRos; roslaunch mrs_status status.launch
+        - waitForSimulation; roslaunch mrs_uav_status status.launch
   - spawn:
       layout: even-vertical
       panes:
-        - waitForSimulation; spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-mobius-camera-front
+        - waitForSimulation; rosrun mrs_simulation spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-mobius-camera-front
   - control:
       layout: even-vertical
       panes:
-        - waitForOdometry; roslaunch mrs_general core.launch
+        - waitForOdometry; roslaunch mrs_uav_general core.launch
   - takeoff:
       layout: even-vertical
       panes:
-        - waitForRos; roslaunch mrs_general automatic_start.launch
+        - waitForSimulation; roslaunch mrs_uav_general automatic_start.launch
         - 'waitForControl;
           rosservice call /$UAV_NAME/mavros/cmd/arming 1;
+          sleep 2;
           rosservice call /$UAV_NAME/mavros/set_mode 0 offboard'
   - goto:
       layout: even-vertical
@@ -57,5 +58,5 @@ windows:
   - rviz:
       layout: even-vertical
       panes:
-        - waitForControl; roslaunch mrs_testing rviz.launch
+        - waitForControl; roslaunch mrs_uav_testing rviz.launch
         - waitForControl; roslaunch mrs_rviz_plugins load_robot.launch

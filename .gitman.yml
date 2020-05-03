@@ -1,0 +1,20 @@
+location: .gitman
+sources:
+- name: example_ros_uav
+  type: git
+  repo: git@github.com:ctu-mrs/example_ros_uav.git
+  sparse_paths:
+  -
+  rev: master
+  link: ros_packages/example_ros_uav
+  scripts:
+  - git submodule update --init --recursive
+- name: example_ros_vision
+  type: git
+  repo: git@github.com:ctu-mrs/example_ros_vision.git
+  sparse_paths:
+  -
+  rev: master
+  link: ros_packages/example_ros_vision
+  scripts:
+  - git submodule update --init --recursive
