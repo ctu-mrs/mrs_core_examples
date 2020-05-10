@@ -18,3 +18,22 @@ sources:
   link: ros_packages/example_ros_vision
   scripts:
   - git submodule update --init --recursive
+sources_locked:
+- name: example_ros_uav
+  type: git
+  repo: git@github.com:ctu-mrs/example_ros_uav.git
+  sparse_paths:
+  -
+  rev: f1889f3aac8833971a07cfdf6676f2e7fb0633e5
+  link: ros_packages/example_ros_uav
+  scripts:
+  - git submodule update --init --recursive
+- name: example_ros_vision
+  type: git
+  repo: git@github.com:ctu-mrs/example_ros_vision.git
+  sparse_paths:
+  -
+  rev: e2e7578a63084e44b9f6502a93726df58b25506e
+  link: ros_packages/example_ros_vision
+  scripts:
+  - git submodule update --init --recursive
