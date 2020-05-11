@@ -2,7 +2,7 @@ location: .gitman
 sources:
 - name: example_ros_uav
   type: git
-  repo: git@github.com:ctu-mrs/example_ros_uav.git
+  repo: https://github.com/ctu-mrs/example_ros_uav.git
   sparse_paths:
   -
   rev: master
@@ -11,7 +11,7 @@ sources:
   - git submodule update --init --recursive
 - name: example_ros_vision
   type: git
-  repo: git@github.com:ctu-mrs/example_ros_vision.git
+  repo: https://github.com/ctu-mrs/example_ros_vision.git
   sparse_paths:
   -
   rev: master
@@ -21,7 +21,7 @@ sources:
 sources_locked:
 - name: example_ros_uav
   type: git
-  repo: git@github.com:ctu-mrs/example_ros_uav.git
+  repo: https://github.com/ctu-mrs/example_ros_uav.git
   sparse_paths:
   -
   rev: f1889f3aac8833971a07cfdf6676f2e7fb0633e5
@@ -30,7 +30,7 @@ sources_locked:
   - git submodule update --init --recursive
 - name: example_ros_vision
   type: git
-  repo: git@github.com:ctu-mrs/example_ros_vision.git
+  repo: https://github.com/ctu-mrs/example_ros_vision.git
   sparse_paths:
   -
   rev: e2e7578a63084e44b9f6502a93726df58b25506e
