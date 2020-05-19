@@ -1,5 +1,14 @@
 location: .gitman
 sources:
+- name: example_ros_pluginlib
+  type: git
+  repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
+  sparse_paths:
+  -
+  rev: master
+  link: ros_packages/example_ros_pluginlib
+  scripts:
+  -
 - name: example_ros_uav
   type: git
   repo: https://github.com/ctu-mrs/example_ros_uav.git
@@ -18,14 +27,16 @@ sources:
   link: ros_packages/example_ros_vision
   scripts:
   - git submodule update --init --recursive
+sources_locked:
 - name: example_ros_pluginlib
   type: git
-  repo: git@github.com:ctu-mrs/example_ros_pluginlib.git
+  repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
   sparse_paths:
   -
-  rev: master
+  rev: 1171c60531a92f42c0cf9b56bb20654a687b3993
   link: ros_packages/example_ros_pluginlib
-sources_locked:
+  scripts:
+  -
 - name: example_ros_uav
   type: git
   repo: https://github.com/ctu-mrs/example_ros_uav.git
