@@ -1,4 +1,4 @@
-# Example packages
+# Example packages [![Build Status](https://travis-ci.com/ctu-mrs/example_ros_packages.svg?branch=master)](https://travis-ci.com/ctu-mrs/example_ros_packages)
 
 This repository includes other examples.
 
