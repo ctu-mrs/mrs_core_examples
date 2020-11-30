@@ -8,7 +8,7 @@ sources:
   rev: master
   link: ros_packages/example_ros_pluginlib
   scripts:
-  -
+  - git submodule update --init --recursive
 - name: example_ros_uav
   type: git
   repo: https://github.com/ctu-mrs/example_ros_uav.git
@@ -36,7 +36,7 @@ sources_locked:
   rev: 1171c60531a92f42c0cf9b56bb20654a687b3993
   link: ros_packages/example_ros_pluginlib
   scripts:
-  -
+  - git submodule update --init --recursive
 - name: example_ros_uav
   type: git
   repo: https://github.com/ctu-mrs/example_ros_uav.git
