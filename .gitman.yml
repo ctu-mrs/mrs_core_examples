@@ -42,7 +42,7 @@ sources_locked:
   repo: https://github.com/ctu-mrs/example_ros_uav.git
   sparse_paths:
   -
-  rev: f1889f3aac8833971a07cfdf6676f2e7fb0633e5
+  rev: b6f3cd4a3de16dd77b87dd3f2a186170407e5b33
   link: ros_packages/example_ros_uav
   scripts:
   - git submodule update --init --recursive
