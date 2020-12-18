@@ -1,4 +1,7 @@
-# Example packages [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/CI/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions)
+# Example packages
+
+| Build status | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Melodic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Noetic/badge.svg)](https://github.com/ctu-mrs/mrs_simulation/actions) |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 
 This repository includes other examples.
 
