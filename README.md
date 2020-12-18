@@ -1,6 +1,6 @@
 # Example packages
 
-| Build status | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Melodic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Noetic/badge.svg)](https://github.com/ctu-mrs/mrs_simulation/actions) |
+| Build status | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Melodic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Noetic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) |
 |--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 
 This repository includes other examples.
