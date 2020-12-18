@@ -5,6 +5,8 @@ on:
     branches: [ master ]
     paths-ignore:
       - '**/README.md'
+      - '**.yaml'
+      - '**.launch'
   pull_request:
     branches: [ master ]
 
