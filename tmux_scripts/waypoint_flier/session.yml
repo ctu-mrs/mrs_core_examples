@@ -18,7 +18,7 @@ windows:
   - spawn:
       layout: even-vertical
       panes:
-        - waitForSimulation; rosrun mrs_simulation spawn 1 --run --delete --enable-rangefinder --enable-ground-truth --enable-mobius-camera-front
+        - waitForSimulation; rosservice call /mrs_drone_spawner/spawn "1 $UAV_TYPE --enable-rangefinder --enable-ground-truth --enable-mobius-camera-front"
   - control:
       layout: even-vertical
       panes:
