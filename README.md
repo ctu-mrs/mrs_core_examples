@@ -3,7 +3,8 @@
 | Build status | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Melodic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Noetic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) |
 |--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 
-This repository includes other examples.
+This repository includes other ROS packages, demonstrating some basic functionality to get you started.
+You can test these in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).
 
 ## Packages
 
