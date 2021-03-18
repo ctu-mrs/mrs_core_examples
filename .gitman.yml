@@ -1,57 +1,72 @@
 location: .gitman
 sources:
-- name: example_ros_pluginlib
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
-  sparse_paths:
-  -
-  rev: master
-  link: ros_packages/example_ros_pluginlib
-  scripts:
-  - git submodule update --init --recursive
-- name: example_ros_uav
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_uav.git
-  sparse_paths:
-  -
-  rev: master
-  link: ros_packages/example_ros_uav
-  scripts:
-  - git submodule update --init --recursive
-- name: example_ros_vision
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_vision.git
-  sparse_paths:
-  -
-  rev: master
-  link: ros_packages/example_ros_vision
-  scripts:
-  - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
+    name: example_ros_pluginlib
+    rev: master
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_pluginlib
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_uav.git
+    name: example_ros_uav
+    rev: master
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_uav
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_vision.git
+    name: example_ros_vision
+    rev: master
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_vision
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
 sources_locked:
-- name: example_ros_pluginlib
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
-  sparse_paths:
+  - repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
+    name: example_ros_pluginlib
+    rev: b566f9b9cef82f1f69508fd45b59e63c8a27b817
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_pluginlib
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_uav.git
+    name: example_ros_uav
+    rev: dda7af95d86b2d4164b7c066fb0054882fe32e0b
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_uav
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_vision.git
+    name: example_ros_vision
+    rev: 06d47b4f51a1e1fc46604a7dff2087e4911c2cc1
+    type: git
+    sparse_paths:
+      -
+    link: ros_packages/example_ros_vision
+    links:
+      -
+    scripts:
+      - git submodule update --init --recursive
+default_group: ''
+groups:
   -
-  rev: d15cbcce722399db55451a6e84326a7175c9d3c5
-  link: ros_packages/example_ros_pluginlib
-  scripts:
-  - git submodule update --init --recursive
-- name: example_ros_uav
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_uav.git
-  sparse_paths:
-  -
-  rev: 4805f60ab939953d90548438e2a698023db0bd8a
-  link: ros_packages/example_ros_uav
-  scripts:
-  - git submodule update --init --recursive
-- name: example_ros_vision
-  type: git
-  repo: https://github.com/ctu-mrs/example_ros_vision.git
-  sparse_paths:
-  -
-  rev: 3c08b98c9b7af0c59f3e9d0ea54febd733896d6e
-  link: ros_packages/example_ros_vision
-  scripts:
-  - git submodule update --init --recursive
