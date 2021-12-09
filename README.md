@@ -5,6 +5,7 @@
 
 This repository includes other ROS packages, demonstrating some basic functionality to get you started.
 You can test these in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).
+Follow our **[How to manager ROS workspaces](https://ctu-mrs.github.io/docs/system/managing_ros_workspaces.html)** guide to learn **how to set up** a custom workspace.
 
 ## Packages
 
