@@ -33,3 +33,40 @@ sources:
         target: ros_packages/example_ros_vision
     scripts:
       - git submodule update --init --recursive
+sources_locked:
+  - repo: https://github.com/ctu-mrs/example_ros_pluginlib.git
+    name: example_ros_pluginlib
+    rev: b566f9b9cef82f1f69508fd45b59e63c8a27b817
+    type: git
+    sparse_paths:
+      -
+    links:
+      - source: ''
+        target: ros_packages/example_ros_pluginlib
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_uav.git
+    name: example_ros_uav
+    rev: b32c86338faea2cb9b4bfea143ce3bcb5e1fd9b8
+    type: git
+    sparse_paths:
+      -
+    links:
+      - source: ''
+        target: ros_packages/example_ros_uav
+    scripts:
+      - git submodule update --init --recursive
+  - repo: https://github.com/ctu-mrs/example_ros_vision.git
+    name: example_ros_vision
+    rev: e94a067b6f30f8a0ca63fdf8ad60087673853e81
+    type: git
+    sparse_paths:
+      -
+    links:
+      - source: ''
+        target: ros_packages/example_ros_vision
+    scripts:
+      - git submodule update --init --recursive
+default_group: ''
+groups:
+  -
