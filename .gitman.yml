@@ -58,7 +58,7 @@ sources_locked:
       - git submodule update --init --recursive
   - repo: https://github.com/ctu-mrs/example_ros_vision.git
     name: example_ros_vision
-    rev: 7b3838400ab5e8afc656a8cf4bfabf3a1e11e1b2
+    rev: 1f5614dcace6d535fc36881ba136a7afb68f2d7a
     type: git
     sparse_paths:
       -
