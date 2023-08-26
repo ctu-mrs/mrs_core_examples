@@ -94,7 +94,7 @@ sources_locked:
       -
     links:
       - source: ''
-        target: ros_packages/example_ros_uav
+        target: ros_packages/example_ros_uav_simple
     scripts:
       - git submodule update --init --recursive
 default_group: ''
