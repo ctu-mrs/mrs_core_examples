@@ -8,6 +8,9 @@ on:
     paths-ignore:
       - '**/README.md'
 
+  schedule:
+    - cron:  '0 8 * * *' # every day at 10am UTC+2
+
   pull_request:
     branches: [ master ]
 
