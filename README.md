@@ -1,15 +1,24 @@
-# Example packages
+# MRS Core Examples
 
-| Build status | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Melodic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) | [![Build Status](https://github.com/ctu-mrs/example_ros_packages/workflows/Noetic/badge.svg)](https://github.com/ctu-mrs/example_ros_packages/actions) |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-
-This repository includes other ROS packages, demonstrating some basic functionality to get you started.
-You can test these in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).
-Follow our **[How to manager ROS workspaces](https://ctu-mrs.github.io/docs/system/managing_ros_workspaces.html)** guide to learn **how to set up** a custom workspace.
+This repository includes Core ROS examples for the [MRS UAV System](https://github.com/ctu-mrs/mrs_uav_system).
 
 ## Packages
 
-* [example_ros_uav_simple](https://github.com/ctu-mrs/example_ros_uav_simple) - Example of a simple nodelet
-* [example_ros_uav](https://github.com/ctu-mrs/example_ros_uav) - Example of UAV control
-* [example_ros_vision](https://github.com/ctu-mrs/example_ros_vision) - Example of UAV computer vision
-* [example_ros_pluginlib](https://github.com/ctu-mrs/example_ros_pluginlib) - Example of ROS Pluginlib, similar to how it is used in the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [waypoint_flier_simple](./waypoint_flier_simple) - Minimalistic C++ Nodelet with "_vanilla_" ROS features
+* [waypoint_flier](./waypoint_flier) - Full C++ Nodelet with "_MRS_" libraries and wrappers
+* [controller_plugin](./controller_plugin) - Example of Controller plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [tracker_plugin](./tracker_plugin) - Example of Tracker plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [pluginlib_example](./pluginlib_example) - Example of ROS Pluginlib, similar to how it is used in the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+
+# Disclaimer
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

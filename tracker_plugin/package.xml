@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>example_tracker_plugin</name>
+  <version>1.0.0</version>
+  <description>The example_controller_plugin package</description>
+
+  <author email="tomas.baca@fel.cvut.cz">Tomas Baca</author>
+  <maintainer email="tomas.baca@fel.cvut.cz">Tomas Baca</maintainer>
+
+  <license>BSD 3-Clause</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>cmake_modules</depend>
+  <depend>rospy</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>mrs_msgs</depend>
+  <depend>mrs_lib</depend>
+  <depend>mrs_uav_managers</depend>
+  <depend>dynamic_reconfigure</depend>
+
+  <export>
+    <mrs_uav_managers plugin="${prefix}/plugins.xml" />
+  </export>
+
+</package>

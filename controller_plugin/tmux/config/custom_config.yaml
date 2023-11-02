@@ -1,0 +1,55 @@
+mrs_uav_managers:
+
+  estimation_manager:
+
+    # loaded state estimator plugins
+    state_estimators: [
+      "gps_baro",
+      "ground_truth",
+    ]
+
+    initial_state_estimator: "gps_baro" # will be used as the first state estimator
+    agl_height_estimator: "garmin_agl" # only slightly filtered height for checking min height (not used in control feedback)
+
+  control_manager:
+
+    ExampleController:
+      address: "example_controller_plugin/ExampleController"
+      namespace: "example_controller"
+      eland_threshold: 20.0 # [m], position error triggering eland
+      failsafe_threshold: 30.0 # [m], position error triggering failsafe land
+      odometry_innovation_threshold: 1.5 # [m], position odometry innovation threshold
+      human_switchable: true
+
+      # which outputs the controller can provide
+      outputs:
+        actuators:             false
+        control_group:         false
+        attitude_rate:         false
+        attitude:              true
+        acceleration_hdg_rate: false
+        acceleration_hdg:      false
+        velocity_hdg_rate:     false
+        velocity_hdg:          false
+        position:              false
+
+    # list of names of dynamically loaded controllers
+    controllers : [
+      "ExampleController",
+    ]
+
+  uav_manager:
+
+    takeoff:
+      after_takeoff:
+        controller: "ExampleController"
+
+    midair_activation:
+      after_activation:
+        controller: "ExampleController"
+
+    min_height_checking:
+      enabled: false
+
+    max_height_checking:
+      enabled: false

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>waypoint_flier_simple</name>
+  <version>1.0.0</version>
+  <description>waypoint_flier_simple</description>
+
+  <maintainer email="hertdani@fel.cvut.cz">Daniel Hert</maintainer>
+  <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>cmake_modules</depend>
+  <depend>roscpp</depend>
+  <depend>nodelet</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>mrs_msgs</depend>
+
+  <export>
+
+    <!-- The plugins.xml file defines nodelet as a plugin -->
+    <nodelet plugin="${prefix}/nodelets.xml" />
+
+  </export>
+
+</package>
