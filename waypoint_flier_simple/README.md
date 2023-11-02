@@ -1,4 +1,4 @@
-# MRS ROS simple example
+# WaypointFlier Simple - ROS simple example
 
 This package was created as an example of how to write a very simple ROS nodelet.
 You can test the program in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).

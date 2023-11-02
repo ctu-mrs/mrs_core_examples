@@ -1,8 +1,7 @@
-# MRS ROS example
+# WaypointFlier ROS example
 
-This package was created as an example of how to write basic ROS nodelets.
+This package was created as an example of how to write ROS nodelets.
 The package is written in C++ and features custom MRS libraries and msgs.
-You can test the program in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).
 
 ## Functionality
 
@@ -47,7 +46,6 @@ Also check out our general [C++ good/bad coding practices tutorial](https://ctu-
   - `position_x` -  local variable
   - `position_x_` -  member variable
 * Also, we distinguish parameters which are loaded as parameters by underscore at the beginning
-  - `_simulation_` - parameter
 * Descriptive variable names are used. The purpose of the variable should be obvious from the name.
   - `sub_odom_uav_` - member subscriber to uav odometry msg type
   - `pub_reference_` - member publisher of reference msg type
