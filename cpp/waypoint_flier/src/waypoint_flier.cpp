@@ -9,7 +9,7 @@
 #include <dynamic_reconfigure/server.h>
 
 /* this header file is created during compilation from python script dynparam.cfg */
-#include <waypoint_flier/dynparamConfig.h>
+#include <example_waypoint_flier/dynparamConfig.h>
 
 /* for smart pointers (do not use raw pointers) */
 #include <memory>
@@ -52,7 +52,7 @@
 using vec2_t = mrs_lib::geometry::vec_t<2>;
 using vec3_t = mrs_lib::geometry::vec_t<3>;
 
-namespace waypoint_flier
+namespace example_waypoint_flier
 {
 
 /* class WaypointFlier //{ */
@@ -126,12 +126,12 @@ private:
 
   // | ------------------- dynamic reconfigure ------------------ |
 
-  typedef waypoint_flier::dynparamConfig                              Config;
-  typedef dynamic_reconfigure::Server<waypoint_flier::dynparamConfig> ReconfigureServer;
-  boost::recursive_mutex                                              mutex_dynamic_reconfigure_;
-  boost::shared_ptr<ReconfigureServer>                                reconfigure_server_;
-  void                                                                callbackDynamicReconfigure(Config& config, uint32_t level);
-  waypoint_flier::dynparamConfig                                      last_drs_config_;
+  typedef example_waypoint_flier::dynparamConfig                              Config;
+  typedef dynamic_reconfigure::Server<example_waypoint_flier::dynparamConfig> ReconfigureServer;
+  boost::recursive_mutex                                                      mutex_dynamic_reconfigure_;
+  boost::shared_ptr<ReconfigureServer>                                        reconfigure_server_;
+  void                                                                        callbackDynamicReconfigure(Config& config, uint32_t level);
+  example_waypoint_flier::dynparamConfig                                      last_drs_config_;
 
   // | --------------------- waypoint idling -------------------- |
 
@@ -642,8 +642,8 @@ double WaypointFlier::distance(const mrs_msgs::Reference& waypoint, const geomet
 
 //}
 
-}  // namespace waypoint_flier
+}  // namespace example_waypoint_flier
 
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(waypoint_flier::WaypointFlier, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(example_waypoint_flier::WaypointFlier, nodelet::Nodelet);

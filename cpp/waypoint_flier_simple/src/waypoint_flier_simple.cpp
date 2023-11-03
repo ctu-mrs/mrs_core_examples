@@ -17,7 +17,7 @@
 #include <random>
 //}
 
-namespace waypoint_flier_simple
+namespace example_waypoint_flier_simple
 {
 
 /* class WaypointFlierSimple //{ */
@@ -231,8 +231,8 @@ double WaypointFlierSimple::getRandomDouble(double min, double max) {
 
 //}
 
-}  // namespace waypoint_flier_simple
+}  // namespace example_waypoint_flier_simple
 
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(waypoint_flier_simple::WaypointFlierSimple, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(example_waypoint_flier_simple::WaypointFlierSimple, nodelet::Nodelet);

@@ -40,7 +40,7 @@ windows:
   - waypointflier:
       layout: tiled
       panes:
-        - waitForControl; roslaunch waypoint_flier_simple waypoint_flier_simple.launch
+        - waitForControl; roslaunch example_waypoint_flier_simple waypoint_flier_simple.launch
         - 'history -s rosservice call /$UAV_NAME/waypoint_flier_simple/start'
   - rviz:
       layout: tiled

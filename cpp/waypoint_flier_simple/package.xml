@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
 
-  <name>waypoint_flier_simple</name>
+  <name>example_waypoint_flier_simple</name>
   <version>1.0.0</version>
-  <description>waypoint_flier_simple</description>
+  <description>Example for the Simple Waypoint Flier</description>
 
   <maintainer email="hertdani@fel.cvut.cz">Daniel Hert</maintainer>
   <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
@@ -20,10 +20,7 @@
   <depend>mrs_msgs</depend>
 
   <export>
-
-    <!-- The plugins.xml file defines nodelet as a plugin -->
     <nodelet plugin="${prefix}/nodelets.xml" />
-
   </export>
 
 </package>

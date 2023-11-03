@@ -20,10 +20,10 @@
   <group ns="$(arg UAV_NAME)">
 
     <!-- WaypointFlierSimple nodelet -->
-    <node pkg="nodelet" type="nodelet" name="waypoint_flier_simple" args="$(arg nodelet) waypoint_flier_simple/WaypointFlierSimple $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
+    <node pkg="nodelet" type="nodelet" name="waypoint_flier_simple" args="$(arg nodelet) example_waypoint_flier_simple/WaypointFlierSimple $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
 
         <!-- ROS parameters config file -->
-      <rosparam file="$(find waypoint_flier_simple)/config/waypoint_flier.yaml" />
+      <rosparam file="$(find example_waypoint_flier_simple)/config/waypoint_flier.yaml" />
 
         <!-- Subscribers (note that the topic names will also be remapped using the namespace as a prefix) -->
       <remap from="~odom_in" to="estimation_manager/odom_main" />

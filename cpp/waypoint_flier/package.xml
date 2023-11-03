@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
 
-  <name>waypoint_flier</name>
+  <name>example_waypoint_flier</name>
   <version>1.0.0</version>
-  <description>waypoint_flier</description>
+  <description>The Example Waypoint Flier</description>
 
   <maintainer email="matej.petrlik@fel.cvut.cz">Matej Petrlik</maintainer>
   <author email="matej.petrlik@fel.cvut.cz">Matej Petrlik</author>
@@ -21,10 +21,7 @@
   <depend>dynamic_reconfigure</depend>
 
   <export>
-
-    <!-- The plugins.xml file defines nodelet as a plugin -->
     <nodelet plugin="${prefix}/nodelets.xml" />
-
   </export>
 
 </package>

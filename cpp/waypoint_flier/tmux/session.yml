@@ -40,7 +40,7 @@ windows:
   - waypointflier:
       layout: tiled
       panes:
-        - waitForControl; roslaunch waypoint_flier waypoint_flier.launch
+        - waitForControl; roslaunch example_waypoint_flier waypoint_flier.launch
         - 'history -s rosservice call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint'
         - 'history -s rosservice call /$UAV_NAME/waypoint_flier/start_waypoints_following'
         - 'history -s rosservice call /$UAV_NAME/waypoint_flier/stop_waypoints_following'

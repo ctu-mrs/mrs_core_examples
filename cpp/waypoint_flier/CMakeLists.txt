@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15.0)
-project(waypoint_flier)
+project(example_waypoint_flier)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
