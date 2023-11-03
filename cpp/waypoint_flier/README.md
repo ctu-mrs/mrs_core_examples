@@ -10,6 +10,14 @@ The package is written in C++ and features custom MRS libraries and msgs.
 * Service `start_waypoint_following` causes the UAV to start tracking the waypoints
 * Service `stop_waypoint_following` stops adding new waypoints. Flight to the current waypoint is not interrupted.
 
+## How to start
+
+```bash
+./tmux/start.sh
+```
+
+The call the services prepared in the terminal window.
+
 ## Package structure
 
 See [ROS packages](http://wiki.ros.org/Packages)

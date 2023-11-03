@@ -1,0 +1,13 @@
+frame_id: "world_origin"
+
+timer_main:
+  rate: 1.0 # [Hz]
+
+center:
+  x: 0.0 # [m]
+  y: 0.0 # [m]
+  z: 2.0 # [m]
+
+dimensions:
+  x: 20.0 # [m]
+  y: 20.0 # [m]

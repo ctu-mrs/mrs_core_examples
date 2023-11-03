@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>example_sweeping_generator</name>
+  <version>1.0.0</version>
+  <description>The Python Example for Sweeping Generator</description>
+
+  <maintainer email="tomas.baca@fel.cvut.cz">Tomas Baca</maintainer>
+  <author email="tomas.baca@fel.cvut.cz">Tomas Baca</author>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>mrs_msgs</depend>
+
+  <export>
+  </export>
+
+</package>

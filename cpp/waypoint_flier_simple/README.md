@@ -9,6 +9,14 @@ You can test the program in simulation (see our [simulation tutorial](https://ct
 * Service `start_waypoint_following` will activate the nodelet
 * The area in which random waypoints are generated is configurable with a separate config file See [.yaml files](http://wiki.ros.org/rosparam)
 
+## How to start
+
+```bash
+./tmux/start.sh
+```
+
+The call the services prepared in the terminal window.
+
 ## Package structure
 
 See [ROS packages](http://wiki.ros.org/Packages)
