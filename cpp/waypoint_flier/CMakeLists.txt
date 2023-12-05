@@ -15,7 +15,7 @@ SET(CATKIN_DEPENDENCIES
   )
 
 SET(LIBRARIES
-  WaypointFlier
+  ExampleWaypointFlier
   )
 
 find_package(catkin REQUIRED COMPONENTS
@@ -43,17 +43,17 @@ include_directories(
   )
 
 ## Declare a C++ library
-add_library(WaypointFlier
-  src/waypoint_flier.cpp
+add_library(ExampleWaypointFlier
+  src/example_waypoint_flier.cpp
   )
 
 ## Add configure headers for dynamic reconfigure
-add_dependencies(WaypointFlier
+add_dependencies(ExampleWaypointFlier
   ${PROJECT_NAME}_gencfg
   )
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(WaypointFlier
+target_link_libraries(ExampleWaypointFlier
   ${catkin_LIBRARIES}
   ${Eigen_LIBRARIES}
   )

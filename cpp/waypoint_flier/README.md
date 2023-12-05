@@ -1,4 +1,4 @@
-# WaypointFlier ROS example
+# ExampleWaypointFlier ROS example
 
 This package was created as an example of how to write ROS nodelets.
 The package is written in C++ and features custom MRS libraries and msgs.
@@ -58,7 +58,7 @@ Also check out our general [C++ good/bad coding practices tutorial](https://ctu-
   - `sub_odom_uav_` - member subscriber to uav odometry msg type
   - `pub_reference_` - member publisher of reference msg type
   - `srv_server_start_waypoints_following_` - member service server for starting following of waypoints
-  - `WaypointFlier::callbackTimerCheckSubscribers()` - callback of timer which checks subscribers
+  - `ExampleWaypointFlier::callbackTimerCheckSubscribers()` - callback of timer which checks subscribers
   - `mutex_odom_uav_` - mutex locking access to variable containing odometry of the UAV
 
 ### Good practices

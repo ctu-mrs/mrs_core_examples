@@ -10,23 +10,23 @@
 
     <!-- will it run as standalone nodelet or using a nodelet manager? -->
   <arg name="standalone" default="true" />
-  <arg name="manager" default="$(arg UAV_NAME)_waypointflier_manager" />
+  <arg name="manager" default="$(arg UAV_NAME)_example_waypoint_flier_manager" />
   <arg unless="$(arg standalone)" name="nodelet" value="load"/>
   <arg     if="$(arg standalone)" name="nodelet" value="standalone"/>
   <arg unless="$(arg standalone)" name="nodelet_manager" value="$(arg manager)"/>
   <arg     if="$(arg standalone)" name="nodelet_manager" value=""/>
 
-  <!-- Namespace - all topics, services and parameters will be remapped using this namespace as a prefix (eg.: "/waypoint_flier/odom_uav_in" to "/uav1/waypoint_flier/odom_uav_in") -->
+  <!-- Namespace - all topics, services and parameters will be remapped using this namespace as a prefix (eg.: "/example_waypoint_flier/odom_uav_in" to "/uav1/example_waypoint_flier/odom_uav_in") -->
   <group ns="$(arg UAV_NAME)">
 
-    <!-- WaypointFlier nodelet -->
-    <node pkg="nodelet" type="nodelet" name="waypoint_flier" args="$(arg nodelet) example_waypoint_flier/WaypointFlier $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
+    <!-- ExampleWaypointFlier nodelet -->
+    <node pkg="nodelet" type="nodelet" name="example_waypoint_flier" args="$(arg nodelet) example_waypoint_flier/ExampleWaypointFlier $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
 
       <!-- Parameters loaded from launch file -->
       <param name="uav_name" value="$(arg UAV_NAME)" />
 
         <!-- ROS parameters config file -->
-      <rosparam file="$(find example_waypoint_flier)/config/waypoint_flier.yaml" />
+      <rosparam file="$(find example_waypoint_flier)/config/example_waypoint_flier.yaml" />
 
         <!-- Subscribers (note that the topic names will also be remapped using the namespace as a prefix) -->
       <remap from="~odom_uav_in" to="estimation_manager/odom_main" />
