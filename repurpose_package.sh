@@ -24,7 +24,7 @@ echo "** CREATING NEW GIT REPOSITORY **"
 
 # Ask for confirmation
 echo History of the old repository will be deleted.
-read -p "Are you sure? " -r
+read -p "Are you sure? (y/n)" -r
 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -33,6 +33,11 @@ then
     rm -rf .git
     git init
   fi
+  echo Created a new git repository.
+
+else
+
+  echo Not creating a new git repository.
 
 fi
 
@@ -53,7 +58,7 @@ else
   do
     echo " - $file"
   done
-  read -p "Are you sure? " -r
+  read -p "Are you sure? (y/n)" -r
 
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
@@ -65,6 +70,12 @@ else
         sed -i "s/$ORIG_NAME/$NEW_NAME/g" "$file"
       fi
     done
+
+    echo "Replaced all occurences within files."
+
+  else
+
+    echo "Not replacing occurences within files."
 
   fi
 
@@ -87,20 +98,25 @@ else
   do
     echo " - $file"
   done
-  read -p "Are you sure? " -r
+  read -p "Are you sure? (y/n)" -r
 
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
 
+    for file in "${files[@]}"
+    do
+      new_file=${file//$ORIG_NAME/$NEW_NAME}
+      echo " - Renaming file \"$file\" to \"$new_file\"."
+      if [ "$3" != "--dry-run" ]; then
+        mv "$file" "$new_file"
+      fi
+    done
 
-  for file in "${files[@]}"
-  do
-    new_file=${file//$ORIG_NAME/$NEW_NAME}
-    echo " - Renaming file \"$file\" to \"$new_file\"."
-    if [ "$3" != "--dry-run" ]; then
-      mv "$file" "$new_file"
-    fi
-  done
+    echo "Replaced all occurences within file name."
+
+  else
+
+    echo "Not replacing occurences within file name."
 
   fi
 
