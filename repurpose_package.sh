@@ -175,7 +175,7 @@ if [ "$CAMEL_CASE" -eq 1 ]; then
 
 fi
 
-if [ "$DRY_RUN" -ne 1 ]; then
+if [ "$DRY_RUN" -eq 1 ]; then
   echo "Dry run mode on - nothing was changed."
 fi
 
