@@ -194,7 +194,7 @@ void ExampleWaypointFlier::onInit() {
   ROS_INFO_STREAM_ONCE("[ExampleWaypointFlier]: " << _n_loops_ << " loops requested");
 
   /* load offset of all waypoints as a static matrix from config file */
-  param_loader.loadMatrixStatic("offset", _offset_, 1, 4);
+  param_loader.loadMatrixKnown("offset", _offset_, 1, 4);
   offsetPoints(waypoints_, _offset_);
 
   if (!param_loader.loadedSuccessfully()) {
