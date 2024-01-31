@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
-if [ $# -le 1 ]; then
-  echo "usage: ./repurpose_package.sh <original_package_name> <new_package_name> [--dry-run, --camel-case]"
-  if [ $1 == "--help" ]; then
-    echo "
-    Removes the .git directory, initializes a new one,
-    replaces all occurences of the original package name with the new one in all files withing all subfolders,
-    replaces all occurences of the original package name with the new one wthinin all filenames."
-  fi
+if [ $# -le 1 ] || [ $1 == "--help" ]; then
+  echo "usage: ./repurpose_package.sh <original_package_name> <new_package_name> [--dry-run, --camel-case]
+  Removes the .git directory, initializes a new one,
+  replaces all occurences of the original package name with the new one in all files withing all subfolders,
+  replaces all occurences of the original package name with the new one wthinin all filenames."
   exit 1
 fi
 
