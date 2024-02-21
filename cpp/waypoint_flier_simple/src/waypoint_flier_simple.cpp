@@ -115,7 +115,7 @@ void WaypointFlierSimple::onInit() {
 
 // | ---------------------- msg callbacks --------------------- |
 
-/* callbackControlManagerDiag() //{ */
+/* callbackOdom() //{ */
 
 
 void WaypointFlierSimple::callbackOdom(const nav_msgs::Odometry& msg) {
