@@ -77,6 +77,7 @@ private:
 
   void              callbackControlManagerDiag(const mrs_msgs::ControlManagerDiagnostics::ConstPtr msg);
   std::atomic<bool> have_goal_ = false;
+  std::atomic<bool> waypoint_reached_ = false;
 
   // | --------------------- timer callbacks -------------------- |
 
@@ -138,6 +139,7 @@ private:
   bool       is_idling_ = false;
   ros::Timer timer_idling_;
   double     _waypoint_idle_time_;
+  double     _waypoint_desired_dist_;
   void       timerIdling(const ros::TimerEvent& te);
 
   // | -------------------- support functions ------------------- |
@@ -176,6 +178,7 @@ void ExampleWaypointFlier::onInit() {
   param_loader.loadParam("uav_name", _uav_name_);
   param_loader.loadParam("land_at_the_end", _land_end_);
   param_loader.loadParam("n_loops", _n_loops_);
+  param_loader.loadParam("waypoint_desired_distance", _waypoint_desired_dist_);
   param_loader.loadParam("waypoint_idle_time", _waypoint_idle_time_);
   param_loader.loadParam("waypoints_frame", _waypoints_frame_);
   param_loader.loadParam("rate/publish_dist_to_waypoint", _rate_timer_publish_dist_to_waypoint_);
@@ -283,19 +286,22 @@ void ExampleWaypointFlier::callbackControlManagerDiag(const mrs_msgs::ControlMan
   double dist = distance(current_waypoint, current_pose);
   ROS_INFO("[ExampleWaypointFlier]: Distance to waypoint: %.2f", dist);
 
-  if (have_goal_ && dist < 0.1 && !diagnostics->tracker_status.have_goal) {
-
-    ROS_INFO("[ExampleWaypointFlier]: Waypoint reached.");
+  if (have_goal_ && !diagnostics->tracker_status.have_goal) {
     have_goal_ = false;
 
-    /* start idling at the reached waypoint */
-    is_idling_ = true;
+    if (dist < _waypoint_desired_dist_) {
+      waypoint_reached_ = true;
+      ROS_INFO("[ExampleWaypointFlier]: Waypoint reached.");
 
-    ros::NodeHandle nh("~");
-    timer_idling_ = nh.createTimer(ros::Duration(_waypoint_idle_time_), &ExampleWaypointFlier::timerIdling, this,
-                                   true);  // the last boolean argument makes the timer run only once
+      /* start idling at the reached waypoint */
+      is_idling_ = true;
 
-    ROS_INFO("[ExampleWaypointFlier]: Idling for %.2f seconds.", _waypoint_idle_time_);
+      ros::NodeHandle nh("~");
+      timer_idling_ = nh.createTimer(ros::Duration(_waypoint_idle_time_), &ExampleWaypointFlier::timerIdling, this,
+                                     true);  // the last boolean argument makes the timer run only once
+
+      ROS_INFO("[ExampleWaypointFlier]: Idling for %.2f seconds.", _waypoint_idle_time_);
+    }
   }
 }
 
@@ -370,7 +376,10 @@ void ExampleWaypointFlier::timerPublishSetReference([[maybe_unused]] const ros::
     ROS_ERROR("Exception caught during publishing topic %s.", pub_reference_.getTopic().c_str());
   }
 
-  idx_current_waypoint_++;
+  if (waypoint_reached_) {
+    idx_current_waypoint_++;
+    waypoint_reached_ = false;
+  }
 
   have_goal_ = true;
 }
