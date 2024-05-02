@@ -3,6 +3,9 @@ project(example_waypoint_flier)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Uncomment these two lines to enable debugging symbols and disable optimization for debugging purposes.
+# add_definitions(-g)
+# add_definitions(-O0)
 
 SET(CATKIN_DEPENDENCIES
   roscpp
