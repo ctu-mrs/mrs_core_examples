@@ -15,7 +15,16 @@ You can test the program in simulation (see our [simulation tutorial](https://ct
 ./tmux/start.sh
 ```
 
-The call the services prepared in the terminal window.
+Then, call the services prepared in the terminal window either by:
+
+1. Pressing tmux binding (`Ctrl + b` or `Ctrl + a`)
+2. Pressing the down arrow to change to the terminal below
+3. Pressing the up arrow to bring up the prepared terminal command
+
+Or typing the following command into a terminal connected to the ROS server:
+```
+rosservice call /uav1/waypoint_flier_simple/start
+```
 
 ## Package structure
 
