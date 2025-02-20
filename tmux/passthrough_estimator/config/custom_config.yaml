@@ -1,0 +1,71 @@
+mrs_uav_managers:
+
+  estimation_manager:
+
+    # loaded state estimator plugins
+    state_estimators: [
+      "passthrough",
+    ]
+
+    initial_state_estimator: "passthrough" # will be used as the first state estimator
+    agl_height_estimator: "" # only slightly filtered height for checking min height (not used in control feedback)
+
+    passthrough:
+      max_flight_z: 100.0 # [m] maximum allowed flight Z (in the estimator frame)
+      kickoff: false # do not wait until desired Hz is achieved (set to true if kickoff estimator is used)
+      message:
+        topic: "hw_api/odometry"
+
+  uav_manager:
+
+    takeoff:
+
+      during_takeoff:
+        controller: "MpcController"
+        tracker: "LandoffTracker"
+
+      after_takeoff:
+        controller: "MpcController" # more robust
+        # controller: "Se3Controller" # more precise
+        tracker: "MpcTracker"
+
+  constraint_manager:
+
+    estimator_types: [
+      "passthrough"
+    ]
+
+    constraints: [
+      "slow",
+      "medium",
+      "fast"
+    ]
+
+    # list of allowed gains per odometry mode
+    allowed_constraints:
+      passthrough: ["slow", "medium", "fast"]
+
+    # those gains will be used automatically when a localization mode switches
+    # and the current gains are not in the allowed list (next paragraphs)
+    default_constraints:
+      passthrough: "slow"
+
+  gain_manager:
+
+    estimator_types: [
+      "passthrough"
+    ]
+
+    gains: [
+      "soft"
+    ]
+
+    # list of allowed gains per odometry mode
+    allowed_gains:
+      passthrough: ["soft"]
+
+    # those gains will be used automatically when a localization mode switches
+    # and the current gains are not in the allowed list (next paragraphs)
+    default_gains:
+      passthrough: "soft"
+

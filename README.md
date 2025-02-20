@@ -15,6 +15,10 @@ This repository includes Core ROS examples for the [MRS UAV System](https://gith
 ## Python
 
 * [sweeping_generator](./python/sweeping_generator) - Minimalistic Python Example that generates sweeping path for the UAV
+ 
+## tmux
+
+* [passthrough_estimator](./tmux/passthrough_estimator) - tmux simulation session that shows how to run the simulation with passthrough estimator
 
 # Disclaimer
 
