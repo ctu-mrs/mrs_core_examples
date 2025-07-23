@@ -78,6 +78,8 @@ namespace example_waypoint_flier{
             // | ---------------------- msg callbacks -------------|
             mrs_lib::SubscriberHandler<nav_msgs::msg::Odometry> sh_odometry_;
             mrs_lib::SubscriberHandler<mrs_msgs::msg::ControlManagerDiagnostics> sh_control_manager_diag_;
+
+            std::shared_ptr<mrs_lib::DynparamMgr> dynparam_mgr_;
             
             void              callbackControlManagerDiag(const mrs_msgs::msg::ControlManagerDiagnostics::ConstSharedPtr msg);
             std::atomic<bool> have_goal_ = false;
@@ -162,21 +164,19 @@ namespace example_waypoint_flier{
         node_ = this->shared_from_this();
         clock_ = node_->get_clock();
 
-
-        // | ------------------- initialize dynamic reconfigure server ------------| 
-        auto dynam_mgr = mrs_lib::DynparamMgr(node_, mutex_dynamic_reconfigure_);
-        const mrs_lib::DynparamMgr::update_cbk_t<int> cbk = std::bind(&ExampleWaypointFlier::callbackDynamicReconfigure<int>, this, "waypoint_idle_time", std::placeholders::_1);
-        auto& param_provider_ = dynam_mgr.get_param_provider();
-        
-        // loading param through yaml files to make them as the dynamic parameters.
-        param_provider_.addYamlFile("/home/amit/ws_mrs/src/ros2_examples/extended_examples/waypoint_flier/config/example_waypoint_flier.yaml");
-        const auto result = dynam_mgr.register_param("waypoint_idle_time", &_waypoint_idle_time_,cbk);
- 
-        std::cout << "Dynamic param loaded : " <<  result << std::endl;
-        
-
         mrs_lib::ParamLoader param_loader(node_);
+
+        dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_dynamic_reconfigure_);
+
         param_loader.addYamlFileFromParam("config");
+
+        dynparam_mgr_->get_param_provider().copyYamls(param_loader.getParamProvider());
+
+        const mrs_lib::DynparamMgr::update_cbk_t<int> cbk = std::bind(&ExampleWaypointFlier::callbackDynamicReconfigure<int>, this, "waypoint_idle_time", std::placeholders::_1);
+        
+        const auto result = dynparam_mgr_->register_param("waypoint_idle_time", &_waypoint_idle_time_, cbk);
+        std::cout << "Dynamic param loaded : " <<  result << std::endl;
+
         param_loader.loadParam("uav_name",_uav_name_);
         param_loader.loadParam("n_loops", _n_loops_);
         param_loader.loadParam("waypoint_desired_distance", _waypoint_desired_dist_);
@@ -451,13 +451,14 @@ namespace example_waypoint_flier{
     }
 
     void ExampleWaypointFlier::timerIdling(){     
-        {
-            std::scoped_lock lock(mutex_waypoint_idle_time_);
-            std::chrono::seconds duration_seconds(_waypoint_idle_time_);
-            rclcpp::sleep_for(std::chrono::duration(duration_seconds));
-        }
-        RCLCPP_INFO(node_->get_logger(),"[ExampleWaypointFlier]: Idling finished");
-        is_idling_ = false;       
+
+      auto waypoint_idle_time = mrs_lib::get_mutexed(mutex_dynamic_reconfigure_, _waypoint_idle_time_);
+
+      std::chrono::seconds duration_seconds(waypoint_idle_time);
+      rclcpp::sleep_for(std::chrono::duration(duration_seconds));
+
+      RCLCPP_INFO(node_->get_logger(),"[ExampleWaypointFlier]: Idling finished");
+      is_idling_ = false;       
         
     }  
 
