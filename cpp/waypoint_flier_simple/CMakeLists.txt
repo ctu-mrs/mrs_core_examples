@@ -4,48 +4,42 @@ project(example_waypoint_flier_simple)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CATKIN_DEPENDENCIES
-  cmake_modules
-  roscpp
-  nodelet
-  nav_msgs
+set(DEPENDENCIES
+  ament_cmake
+  rclcpp
+  rclcpp_components
   mrs_msgs
-  geometry_msgs
+  nav_msgs
   )
+
+foreach(DEP IN LISTS DEPENDENCIES)
+  find_package(${DEP} REQUIRED)
+endforeach()
 
 set(LIBRARIES
   WaypointFlierSimple
   )
 
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPENDENCIES}
-  )
-
-catkin_package(
-  LIBRARIES ${LIBRARIES}
-  CATKIN_DEPENDS ${CATKIN_DEPENDENCIES}
-  )
-
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  include
+  ${rclcpp_INCLUDE_DIRS}
+  ${colcon_INCLUDE_DIRS}
   )
 
-# WaypointFlierSimple
+## --------------------------------------------------------------
+## |                     waypointfliersimple                    |
+## --------------------------------------------------------------
 
-## Declare a C++ library
-add_library(WaypointFlierSimple
-  src/waypoint_flier_simple.cpp
+add_library(WaypointFlierSimple SHARED src/waypoint_flier_simple.cpp
   )
 
-add_dependencies(WaypointFlierSimple
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-  ${catkin_EXPORTED_TARGETS}
+ament_target_dependencies(WaypointFlierSimple
+  ${DEPENDENCIES}
   )
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(WaypointFlierSimple
-  ${catkin_LIBRARIES}
-  )
+# each component (nodelet) needs to be registered to make it discoverable at runtime
+rclcpp_components_register_nodes(WaypointFlierSimple PLUGIN "example_waypoint_flier_simple::WaypointFlierSimple" EXECUTABLE WaypointFlierSimple)
+
 
 ## --------------------------------------------------------------
 ## |                           Install                          |
@@ -57,10 +51,12 @@ install(TARGETS ${LIBRARIES}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
   )
 
-install(DIRECTORY launch config
+install(DIRECTORY launch config include
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   )
 
-install(FILES nodelets.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+ament_export_dependencies(
+  ${DEPENDENCIES}
   )
+
+ament_package()
