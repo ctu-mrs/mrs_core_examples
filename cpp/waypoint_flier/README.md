@@ -1,6 +1,6 @@
-# ExampleWaypointFlier ROS example
+# ExampleWaypointFlier ROS2 example
 
-This package was created as an example of how to write ROS nodelets.
+This package was created as an example of how to write ROS components.
 The package is written in C++ and features custom MRS libraries and msgs.
 
 ## Functionality
@@ -25,32 +25,34 @@ Then, call the services prepared in the terminal window either by:
 Or typing the following command into a terminal connected to the ROS server:
 ```
 rosservice call /uav1/waypoint_flier_simple/start
+
+For navigating between terminals use `shift + arrow keys` and for navigating between panes of terminal use `ctrl + k' to move horizontally between panes and 'ctrl + l` to move vertically.
 ```
 
 ## Package structure
 
-See [ROS packages](http://wiki.ros.org/Packages)
+See [ROS packages](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html)
 
 * `src` directory contains all source files
 * `include` directory contains all header files. It is good practice to separate them from source files.
-* `launch` directory contains `.launch` files which are used to parametrize the nodelet. Command-line arguments, as well as environment variables, can be loaded from the launch files, the nodelet can be put into the correct namespace (each UAV has its namespace to allow multi-robot applications), config files are loaded, and parameters passed to the nodelet. See [.launch files](http://wiki.ros.org/roslaunch/XML)
-* `config` directory contains parameters in `.yaml` files. See [.yaml files](http://wiki.ros.org/rosparam)
-* `package.xml` defines properties of the package, such as package name and dependencies. See [package.xml](http://wiki.ros.org/catkin/package.xml)
+* `launch` directory contains `.py` files which are used to parametrize the components. Command-line arguments, as well as environment variables, can be loaded from the launch files, the component can be put into the correct namespace (each UAV has its namespace to allow multi-robot applications), config files are loaded, and parameters passed to the component. See [.py files](https://docs.ros.org/en/foxy/How-To-Guides/Launching-composable-nodes.html)
+* `config` directory contains parameters in `.yaml` files. See [.yaml files](https://docs.ros.org/en/jazzy/How-To-Guides/Using-ros2-param.html)
+* `package.xml` defines properties of the package, such as package name and dependencies. See [package.xml](https://docs.ros.org/en/eloquent/Tutorials/Creating-Your-First-ROS2-Package.html)
 
 ## Example features
 
-* [Nodelet](http://wiki.ros.org/nodelet) initialization
-* [Subscriber, publisher](http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29), and [timer](http://wiki.ros.org/roscpp/Overview/Timers) initialization
-* [Service servers and clients](http://wiki.ros.org/roscpp/Overview/Services) initialization
-* Loading [parameters](http://wiki.ros.org/Parameter%20Server) with `mrs_lib::ParamLoader` class
+* [Component](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-a-Composable-Node.html) initialization
+* [Subscriber, publisher](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html), and [timer](https://docs.ros2.org/foxy/api/rclcpp/classrclcpp_1_1TimerBase.html) initialization
+* [Service servers and clients]https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html) initialization
+* Loading [parameters](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Monitoring-For-Parameter-Changes-CPP.html) with `mrs_lib::ParamLoader` class
 * Loading [Eigen matrices](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html) with `mrs_lib::ParamLoader` class
 * Checking nodelet initialization status in every callback
 * Checking whether subscribed messages are coming
-* Throttling [text output](http://wiki.ros.org/roscpp/Overview/Logging) to a terminal
+* Throttling [text output](https://docs.ros.org/en/jazzy/Tutorials/Demos/Logging-and-logger-configuration.html) to a terminal
 * [Thread-safe access](https://en.cppreference.com/w/cpp/thread/mutex) to variables using `std::lock_scope()`
 * Using `ConstPtr` when subscribing to a topic to avoid copying large messages
 * Storing and accessing matrices in `Eigen` classes
-* [Remapping topics](http://wiki.ros.org/roslaunch/XML/remap) in the launch file
+* [Remapping topics](https://docs.ros.org/en/foxy/How-To-Guides/Launch-file-different-formats.html) in the launch file
 
 ## Coding style
 
@@ -82,9 +84,10 @@ Also check out our general [C++ good/bad coding practices tutorial](https://ctu-
     odom_uav_ = *msg;
   }
   ```
-* Use `ros::Time::waitForValid()` after creating node handle `ros::NodeHandle nh("~")`
-* When a nodelet is initialized, the method `onInit()` is called. In the method, the subscribers are initialized, and callbacks are bound to them. The callbacks can run even before the `onInit()` method ends, which can lead to some variables being still not initialized, parameters not loaded, etc. This can be prevented by using an `is_initialized_`, initializing it to `false` at the beginning of `onInit()` and setting it to true at the end. Every callback should check this variable and continue only when it is `true`.
+
+
+* When a component is initialized, the method `intialize()` is called. In the method, the subscribers are initialized, and callbacks are bound to them. The callbacks can run even before the `intialize()` method ends, which can lead to some variables being still not initialized, parameters not loaded, etc. This can be prevented by using an `is_initialized_`, initializing it to `false` at the beginning of `intialize()` and setting it to true at the end. Every callback should check this variable and continue only when it is `true`.
 * Use `mrs_lib::ParamLoader` class to load parameters from launch files and config files. This class checks whether the parameter was actually loaded, which can save a lot of debugging. Furthermore, loading matrices into config files becomes much simpler.
-* For printing debug info to terminal use `ROS_INFO()`, `ROS_WARN()`, `ROS_ERROR()` macros. Do not spam the terminal by printing a variable every time a callback is called, use for example `ROS_INFO_THROTTLE(1.0, "dog")` to print *dog* not more often than every second. Other animals can also be used for debugging purposes.
-* If you need to execute a piece of code periodically, do not use sleep in a loop, or anything similar. The ROS API provides `ros::Timer` class for this purposes, which executes a callback every time the timer expires.
+* For printing debug info to terminal use `RCLCPP_INFO()`, `RCLCPP_WARN()`, `RCLCPP_ERROR()` macros. Do not spam the terminal by printing a variable every time a callback is called, use for example `RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock_, 1.0, "dog")` to print *dog* not more often than every second. Other animals can also be used for debugging purposes.
+* If you need to execute a piece of code periodically, do not use sleep in a loop, or anything similar. The ROS API provides `rclcpp::TimerBase` class for this purposes, which executes a callback every time the timer expires.
 * Always check whether all subscribed messages are coming. If not, print a warning. Then you know the problem is not in your nodelet and you know to look for the problem in topic remapping or the node publishing it.

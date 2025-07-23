@@ -1,80 +1,82 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.5)
 project(example_waypoint_flier)
 
-set(CMAKE_CXX_STANDARD 17)
+# set the correct standards
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Uncomment these two lines to enable debugging symbols and disable optimization for debugging purposes.
-# add_definitions(-g)
-# add_definitions(-O0)
 
-SET(CATKIN_DEPENDENCIES
-  roscpp
-  nodelet
-  dynamic_reconfigure
+# set the compile options to show code warnings
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+SET(DEPENDENCIES
+  ament_cmake
+  rclcpp
+  rclcpp_components
   geometry_msgs
   nav_msgs
   mrs_msgs
   mrs_lib
-  )
+  std_srvs
+  Eigen3
+)
 
-SET(LIBRARIES
-  ExampleWaypointFlier
-  )
+foreach(DEP IN LISTS DEPENDENCIES)
+  find_package(${DEP} REQUIRED)
+endforeach()
 
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPENDENCIES}
-  )
-
-find_package(Eigen3 REQUIRED)
-set(Eigen_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS})
-set(Eigen_LIBRARIES ${Eigen_LIBRARIES})
-
-## Generate dynamic parameters which are loaded by the dynamic reconfigure server
-generate_dynamic_reconfigure_options(
-  config/dynparam.cfg
-  )
-
-catkin_package(
-  LIBRARIES ${LIBRARIES}
-  CATKIN_DEPENDS ${CATKIN_DEPENDENCIES}
-  DEPENDS Eigen
-  )
+set(LIBRARIES
+  WaypointFlier
+)
 
 include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
-  )
+  ${rclcpp_INCLUDE_DIRS}
+  ${colcon_INCLUDE_DIRS}
+  ${mrs_lib_INCLUDE_DIRS}
+)
 
-## Declare a C++ library
-add_library(ExampleWaypointFlier
+add_library(WaypointFlier SHARED
   src/example_waypoint_flier.cpp
-  )
+)
 
-## Add configure headers for dynamic reconfigure
-add_dependencies(ExampleWaypointFlier
-  ${PROJECT_NAME}_gencfg
-  )
+# ament manages cmake related variables and dependency search (similar to catkin in ROS1)
+ament_target_dependencies(WaypointFlier
+  ${DEPENDENCIES}
+)
+
+# each component (nodelet) needs to be registered to make it discoverable at runtime
+rclcpp_components_register_nodes(WaypointFlier PLUGIN "example_waypoint_flier::ExampleWaypointFlier" EXECUTABLE WaypointFlier)
+
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(ExampleWaypointFlier
-  ${catkin_LIBRARIES}
-  ${Eigen_LIBRARIES}
-  )
+# target_link_libraries(ExampleWaypointFlier )
 
 ## --------------------------------------------------------------
-## |                           Install                          |
+## |                           install                          |
 ## --------------------------------------------------------------
 
-install(TARGETS ${LIBRARIES}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-  )
+install(
+  TARGETS ${LIBRARIES}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
-install(DIRECTORY launch config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
-install(FILES nodelets.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_export_dependencies(
+  ${DEPENDENCIES}
+)
+
+ament_package()
+

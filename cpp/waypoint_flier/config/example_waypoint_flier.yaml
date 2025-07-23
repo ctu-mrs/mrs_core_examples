@@ -5,13 +5,13 @@ rate:
   check_subscribers: 1 # [Hz]
 
 # number of times the waypoint sequence should be repeated
-n_loops: 1 # [-]
+n_loops: 3 # [-]
 
 # should the UAV land after flying through all the waypoints?
 land_at_the_end: false
 
 # how long should the UAV idle at a waypoint?
-waypoint_idle_time: 1.0
+waypoint_idle_time: 2
 
 # how close should the uav get to the waypoint before considering it reached?
 waypoint_desired_distance: 0.3
@@ -28,4 +28,4 @@ waypoints_frame: "world_origin"
 
 # offset will be added to all waypoints
 # x [m], y [m], z [m], yaw [rad]
-offset: [0, 0, 0, 0]
+offset: [0.0, 0, 0, 0]

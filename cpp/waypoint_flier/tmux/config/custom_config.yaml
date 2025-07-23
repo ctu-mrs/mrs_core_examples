@@ -35,5 +35,5 @@ mrs_uav_managers:
         tracker: "MidairActivationTracker"
 
       after_activation:
-        controller: "Se3Controller"
+        controller: "MpcController"
         tracker: "MpcTracker"
