@@ -62,7 +62,7 @@ namespace example_waypoint_flier_simple
 
         // | ---------------------- ROS subscribers --------------------- |
         rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odom_;
-        void            callbackOdom(const nav_msgs::msg::Odometry& msg);
+        void            callbackOdom(const nav_msgs::msg::Odometry::SharedPtr msg);
 
         // | ---------------------- ROS publishers --------------------- |
         void callbackMainTimer();
@@ -93,9 +93,12 @@ namespace example_waypoint_flier_simple
     }
 
     void WaypointFlierSimple::initialize(){
+
+        node_ = this->shared_from_this();
+        clock_ = node_->get_clock();
         
         /*------------ load parameters --------- */
-        loaded_successfully &= utils::load_param<double>("max_x", max_x_, 10.0, *node_);
+        loaded_successfully &= utils::load_param("max_x", max_x_, 10.0, *node_);
         loaded_successfully &= utils::load_param("max_y", max_y_, 10.0, *node_);
         loaded_successfully &= utils::load_param("max_z", max_z_, 5.0, *node_);
         
@@ -105,9 +108,12 @@ namespace example_waypoint_flier_simple
         }        
 
         // | -------- initialize a publisher for UAV reference -------- |
-        publisher_reference_ = node_->create_publisher<mrs_msgs::msg::ReferenceStamped>("reference_out", 1);
+        publisher_reference_ = node_->create_publisher<mrs_msgs::msg::ReferenceStamped>("~/reference_out", 1);
         timer_publisher_reference_ = create_wall_timer(std::chrono::duration<double>(1.0), std::bind(&WaypointFlierSimple::callbackMainTimer, this));
 
+        // | --------- initialize a subscriber for UAV Odometry -----------|
+        const std::function<void(const nav_msgs::msg::Odometry::SharedPtr)> odom_cbk = std::bind(&WaypointFlierSimple::callbackOdom, this, std::placeholders::_1);
+        sub_odom_ = create_subscription<nav_msgs::msg::Odometry>("~/odom_in",10,odom_cbk);
 
         // |--------------- service server for starting waypoint following ---------------|
         srv_server_start_ = create_service<std_srvs::srv::Trigger>("~/start_waypoint_flying", std::bind(&WaypointFlierSimple::callbackStart, this, std::placeholders::_1, std::placeholders::_2));
@@ -116,20 +122,18 @@ namespace example_waypoint_flier_simple
 
         timer_initializer_->cancel();
 
-
-
     }
 
     // |------------------ msg_callbacks ------------------------|
     /* callbackodom() //{ */
-    void WaypointFlierSimple::callbackOdom(const nav_msgs::msg::Odometry& msg){
+    void WaypointFlierSimple::callbackOdom(const nav_msgs::msg::Odometry::SharedPtr msg){
         /* do not continue if nodelet is not initialized*/
         if (!is_initialized_)
         {
             return;
         }
         // | -------------- save the current UAV odometry ------------- |
-        current_odom_ = msg;
+        current_odom_ = *msg;
         have_odom_    = true;
         
     }
@@ -141,27 +145,27 @@ namespace example_waypoint_flier_simple
         if (!active_)
         {
             RCLCPP_INFO(node_->get_logger(), "[ExampleWaypointFlierSimple]: waypoint flier is not activated yet."); 
+        }else
+        {
+            const double curr_dist = distance(ref_, current_odom_);
+
+            if(curr_dist < 1.0){
+                RCLCPP_INFO_STREAM(node_->get_logger(), "[WaypointFlierSimple]: Goal reached!");
+                /* select new reference point */
+                goal_x_ = getRandomDouble(-max_x_,max_x_);
+                goal_y_ = getRandomDouble(-max_y_,max_y_);
+                goal_z_ = getRandomDouble(2,max_z_);
+
+                RCLCPP_INFO_STREAM(node_->get_logger(), "[WaypointFlierSimple]: New goal X: " << goal_x_ << " Y: " << goal_y_ << " Z: " << goal_z_);
+            }
+
+            ref_.reference.position.x = goal_x_;
+            ref_.reference.position.y = goal_y_;
+            ref_.reference.position.z = goal_z_;  
+            ref_.reference.heading = 0.0;
+            
+            publisher_reference_->publish(ref_);
         }
-        
-        const double curr_dist = distance(ref_, current_odom_);
-
-        if(curr_dist < 1.0){
-            RCLCPP_INFO_STREAM(node_->get_logger(), "[WaypointFlierSimple]: Goal reached!");
-            /* select new reference point */
-            goal_x_ = getRandomDouble(-max_x_,max_x_);
-            goal_y_ = getRandomDouble(-max_y_,max_y_);
-            goal_z_ = getRandomDouble(-max_z_,max_z_);
-
-            RCLCPP_INFO_STREAM(node_->get_logger(), "[WaypointFlierSimple]: New goal X: " << goal_x_ << " Y: " << goal_y_ << " Z: " << goal_z_);
-        }
-
-        ref_.reference.position.x = goal_x_;
-        ref_.reference.position.y = goal_y_;
-        ref_.reference.position.z = goal_z_;  
-        ref_.reference.heading = 0.0;
-        
-        publisher_reference_->publish(ref_);
-        
         
     }
     /* }*/
@@ -196,7 +200,6 @@ namespace example_waypoint_flier_simple
         res->message = "Starting waypoint following.";
 
         return true;
-
 
     }
 

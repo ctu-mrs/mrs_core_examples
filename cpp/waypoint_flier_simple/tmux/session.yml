@@ -5,7 +5,7 @@ socket_name: mrs
 attach: false
 tmux_options: -f /etc/ctu-mrs/tmux.conf
 # you can modify these
-startup_window: waypoint_flier_simple
+startup_window: status
 pre_window: export UAV_NAME=uav1;
             export UAV_TYPE=x500;
             export PLATFORM_CONFIG=`ros2 pkg prefix mrs_multirotor_simulator`/share/mrs_multirotor_simulator/config/mrs_uav_system/$UAV_TYPE.yaml;
@@ -43,7 +43,7 @@ windows:
       root: ~/ws_mrs/
       panes:
         - 'waitForTakeoff && source install/setup.bash && ros2 launch example_waypoint_flier_simple waypoint_flier_simple.py'
-        - 'history -s rosservice call /$UAV_NAME/waypoint_flier_simple/start'
+        - 'history -s ros2 service call /uav1/example_waypoint_flier_simple/start_waypoint_flying std_srvs/srv/Trigger {}'
 
   - takeoff:
       layout: tiled
