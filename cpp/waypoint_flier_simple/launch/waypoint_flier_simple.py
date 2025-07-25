@@ -4,15 +4,16 @@ import launch
 import os
 import sys
 
-from launch_ros.actions import ComposableNodeContainer
+from launch_ros.actions import ComposableNodeContainer , LoadComposableNodes
 from launch_ros.descriptions import ComposableNode
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
-        LaunchConfiguration,        
-        PathJoinSubstitution,
+        LaunchConfiguration,
         EnvironmentVariable,
         )
 
+# Good source to understand translation between ros1 and ros2.
 ## https://github.com/MetroRobots/rosetta_launch?tab=readme-ov-file
 
 from ament_index_python.packages import get_package_share_directory
@@ -39,30 +40,26 @@ def generate_launch_description():
 
     namespace = uav_name,
 
-    ld.add_action(DeclareLaunchArgument(
-        'DEBUG',
-        default_value='false',
-        description='if ran using GNU debugger'
-    ))
-
+    # # { standalone 
+    
     ld.add_action(DeclareLaunchArgument(
        'standalone',
-       default_value='false'
+       default_value='true'
     ))
 
-    ld.add_action(ComposableNodeContainer(
+    standalone = LaunchConfiguration('standalone')
+    # # }
 
-        namespace=uav_name,
-        name='waypoint_flier_simple_container',
-        
-        package='rclcpp_components',
-        executable='component_container_mt',
-        output='screen',
-        # arguments = ['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+    # # { log level 
+    
+    ld.add_action(DeclareLaunchArgument(name='log_level', default_value='info'))
 
-        composable_node_descriptions=[
+    # #}  
+    
 
-            ComposableNode(
+    # # {waypoint flier simple node
+    
+    node = ComposableNode(
 
                 package=pkg_name,
                 plugin='example_waypoint_flier_simple::WaypointFlierSimple',
@@ -74,7 +71,6 @@ def generate_launch_description():
                     {"topic_prefix": "/" + uav_name},
                     {"enable_profiler": False},
                     {"config": this_pkg_path+'/config/waypoint_flier_simple.yaml'},        
-
                 ],
 
                 remappings=[
@@ -86,7 +82,46 @@ def generate_launch_description():
                     ("~/start", "~/start"),
                 ],
             )
-        ],
+    
+    
+
+    # #{ container_name
+
+    container_name = LaunchConfiguration('container_name')
+
+    declare_container_name = DeclareLaunchArgument(
+        'container_name',
+        default_value='',
+        description='Name of an existing container to load into (if standalone is false)'
+    )
+
+    ld.add_action(declare_container_name)
+
+    # #} end of container_name    
+    
+    load_into_existing = LoadComposableNodes(
+        target_container = container_name,
+        composable_node_descriptions = [node],
+        condition = UnlessCondition(standalone)
+    )
+
+    ld.add_action(load_into_existing)
+
+    # # } end of waypoint flier node
+
+    # # { standalone container 
+    
+    ld.add_action(ComposableNodeContainer(
+        namespace=uav_name,
+        name='waypoint_flier_simple_container',
+        package = 'rclcpp_components',
+        executable = 'component_container_mt',
+        output = 'screen',
+        arguments = ['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+        composable_node_descriptions=[node],
+        condition = IfCondition(standalone)
     ))
     
+    # # }
+
     return ld

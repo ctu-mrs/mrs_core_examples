@@ -4,15 +4,16 @@ import launch
 import os
 import sys
 
-from launch_ros.actions import ComposableNodeContainer
+from launch_ros.actions import ComposableNodeContainer, LoadComposableNodes
 from launch_ros.descriptions import ComposableNode
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
-        LaunchConfiguration,        
-        PathJoinSubstitution,
         EnvironmentVariable,
+        LaunchConfiguration
         )
 
+# Good source to understand translation between ros1 and ros2.
 ## https://github.com/MetroRobots/rosetta_launch?tab=readme-ov-file
 
 from ament_index_python.packages import get_package_share_directory
@@ -32,66 +33,103 @@ def generate_launch_description():
         default_value=EnvironmentVariable('UAV_NAME',default_value='uav1'),
         description="The uav name used for namespacing",
     ))
+    # # }
     
     # uav_name = LaunchConfiguration('uav_name')
     uav_name=os.getenv('UAV_NAME', "uav1")
-    # #} end of custom_config
+    # # } end of uav_name.
 
-    namespace = uav_name,
+    namespace = 'waypoint_flier',
+
+    # #{ log_level
+
+    ld.add_action(DeclareLaunchArgument(name='log_level', default_value='info'))
+
+    # #} end of log_level
+
+    # # { standalone 
 
     ld.add_action(DeclareLaunchArgument(
-        'DEBUG',
-        default_value='false',
-        description='if ran using GNU debugger'
+        'standalone',
+        default_value='true'
     ))
-    
-    ld.add_action(ComposableNodeContainer(
 
+    standalone = LaunchConfiguration('standalone')
+    # #}
+
+
+    # # { waypoint flier node 
+    waypoint_flier_node = ComposableNode(
+
+            package=pkg_name,
+            plugin='example_waypoint_flier::ExampleWaypointFlier',
+            namespace=uav_name,
+            name='example_waypoint_flier',
+
+            parameters=[
+                {"uav_name": uav_name}, 
+                {"topic_prefix": "/" + uav_name},
+                {"enable_profiler": False},
+                {"config": this_pkg_path+'/config/example_waypoint_flier.yaml'},        
+                # {"use_sim_time": use_sim_time},
+
+            ],
+
+            remappings=[
+                # # subscribers
+                ("~/odom_in","estimation_manager/odom_main"),
+                ("~/control_manager_diagnostics_in","control_manager/diagnostics"),
+                ("~/odom_gt_in","ground_truth"),
+                # publishers
+                ("~/reference_out","control_manager/reference"),
+                ("~/dist_to_waypoint_out","dist_to_waypoint"),
+                # service servers
+                ("~/start_waypoints_following_in","~/start_waypoints_following"),
+                ("~/stop_waypoints_following_in","~/stop_waypoints_following"),
+                ("~/fly_to_first_waypoint_in","~/fly_to_first_waypoint"),
+                # service client
+                ("~/land_out","uav_manager/land"),
+            ],
+        )
+
+    # #{ container_name
+
+    container_name = LaunchConfiguration('container_name')
+
+    declare_container_name = DeclareLaunchArgument(
+        'container_name',
+        default_value='',
+        description='Name of an existing container to load into (if standalone is false)'
+    )
+
+    ld.add_action(declare_container_name)
+
+    # #} end of container_name 
+
+    load_into_existing = LoadComposableNodes(
+        target_container= container_name,
+        composable_node_descriptions = [waypoint_flier_node],
+        condition = UnlessCondition(standalone)
+    )
+
+    ld.add_action(load_into_existing)
+    
+    # # } end of waypoint flier example 
+
+    # # { standalone container
+    ld.add_action(ComposableNodeContainer(
         namespace=uav_name,
-        name='waypoint_flier_container',
-        
+        name= 'waypoint_flier_container',
         package='rclcpp_components',
         executable='component_container_mt',
         output='screen',
-        # arguments = ['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+        arguments = ['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+        composable_node_descriptions=[waypoint_flier_node],
+        condition = IfCondition(standalone)
 
-        composable_node_descriptions=[
-
-            ComposableNode(
-
-                package=pkg_name,
-                plugin='example_waypoint_flier::ExampleWaypointFlier',
-                namespace=uav_name,
-                name='example_waypoint_flier',
-
-                parameters=[
-                    {"uav_name": uav_name}, 
-                    {"topic_prefix": "/" + uav_name},
-                    {"enable_profiler": False},
-                    {"config": this_pkg_path+'/config/example_waypoint_flier.yaml'},        
-                    # {"use_sim_time": use_sim_time},
-
-                ],
-
-                remappings=[
-                    # # subscribers
-                    ("~/odom_in","estimation_manager/odom_main"),
-                    ("~/control_manager_diagnostics_in","control_manager/diagnostics"),
-                    ("~/odom_gt_in","ground_truth"),
-                    # publishers
-                    ("~/reference_out","control_manager/reference"),
-                    ("~/dist_to_waypoint_out","dist_to_waypoint"),
-                    # service servers
-                    ("~/start_waypoints_following_in","~/start_waypoints_following"),
-                    ("~/stop_waypoints_following_in","~/stop_waypoints_following"),
-                    ("~/fly_to_first_waypoint_in","~/fly_to_first_waypoint"),
-                    # service client
-                    ("~/land_out","uav_manager/land"),
-                ],
-            )
-        ],
     ))
-    
+    # # }
+
     return ld
 
     
