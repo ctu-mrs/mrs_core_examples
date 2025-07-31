@@ -1,73 +1,66 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.8)
 project(example_plugins)
 
-set(CATKIN_DEPENDENCIES
-  roscpp
-  cmake_modules
-  mrs_lib
-  example_plugin_manager
-  pluginlib
-  )
-
-set(LIBRARIES
-  ExamplePlugin
-  )
-
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPENDENCIES}
-  )
-
-find_package(Eigen3 REQUIRED)
-set(Eigen_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS})
-set(Eigen_LIBRARIES ${Eigen_LIBRARIES})
-
-set(CMAKE_CXX_STANDARD 17)
+# set the correct standards
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_definitions(-Wall)
-add_definitions(-Wextra)
-add_definitions(-Wpedantic)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-catkin_package(
-  LIBRARIES ${LIBRARIES}
-  CATKIN_DEPENDS ${CATKIN_DEPENDENCIES}
-  DEPENDS Eigen
-  )
+# find dependencies
+set(DEPENDENCIES
+  ament_cmake
+  pluginlib
+  rclcpp
+  example_plugin_manager
+)
 
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  )
+foreach(DEP IN LISTS DEPENDENCIES)
+  find_package(${DEP} REQUIRED)
+endforeach()
 
-# ExamplePlugin
 
-add_library(ExamplePlugin
-  src/example_plugin.cpp
-  )
+# exmple_plugins
+add_library(ExamplePlugin src/example_plugins.cpp)
 
-add_dependencies(ExamplePlugin
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-  ${catkin_EXPORTED_TARGETS}
-  )
+ament_target_dependencies(ExamplePlugin
+  mrs_lib
+  pluginlib
+  rclcpp
+  example_plugin_manager
+)
 
-target_link_libraries(ExamplePlugin
-  ${catkin_LIBRARIES}
-  ${Eigen_LIBRARIES}
-  )
+target_include_directories(ExamplePlugin PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${mrs_lib_INCLUDE_DIRS}
+)
 
-## --------------------------------------------------------------
-## |                           Install                          |
-## --------------------------------------------------------------
+pluginlib_export_plugin_description_file(ExamplePlugin plugins.xml)
 
-install(TARGETS ${LIBRARIES}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-  )
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
-install(DIRECTORY config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+install(
+  TARGETS ExamplePlugin
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
-install(FILES plugins.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+ament_export_libraries(
+  ExamplePlugin
+)
+
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
+
+ament_package()

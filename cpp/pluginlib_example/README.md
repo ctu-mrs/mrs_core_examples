@@ -19,7 +19,7 @@ A working example showcasing the [pluginlib](http://wiki.ros.org/pluginlib) feat
 # How to start it?
 
 ```bash
-roslaunch example_plugin_manager example_plugin_manager.launch
+ros2 launch example_plugin_manager example_plugin_manager.py
 ```
 
 # Dependencies

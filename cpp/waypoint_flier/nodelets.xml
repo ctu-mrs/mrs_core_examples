@@ -1,5 +1,0 @@
-<library path="lib/libExampleWaypointFlier">
-  <class name="example_waypoint_flier/ExampleWaypointFlier" type="example_waypoint_flier::ExampleWaypointFlier" base_class_type="nodelet::Nodelet">
-    <description>ExampleWaypointFlier nodelet</description>
-  </class>
-</library>

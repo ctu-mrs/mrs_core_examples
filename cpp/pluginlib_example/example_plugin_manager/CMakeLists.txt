@@ -1,70 +1,78 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.8)
 project(example_plugin_manager)
 
-set(CATKIN_DEPENDENCIES
-  roscpp
-  cmake_modules
-  mrs_lib
-  nodelet
-  )
-
-set(LIBRARIES
-  ExamplePluginManager
-  )
-
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPENDENCIES}
-  )
-
-find_package(Eigen3 REQUIRED)
-set(Eigen_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS})
-set(Eigen_LIBRARIES ${Eigen_LIBRARIES})
-
-set(CMAKE_CXX_STANDARD 17)
+# set the correct standards
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${LIBRARIES}
-  CATKIN_DEPENDS ${CATKIN_DEPENDENCIES}
-  )
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  )
+# find dependencies
+set(DEPENDENCIES
+  ament_cmake
+  pluginlib
+  rclcpp
+  mrs_lib
+)
 
-# ExamplePluginManager
+foreach(DEP IN LISTS DEPENDENCIES)
+  find_package(${DEP} REQUIRED)
+endforeach()
 
-add_library(ExamplePluginManager src/example_plugin_manager.cpp)
 
-add_dependencies(ExamplePluginManager
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-  ${catkin_EXPORTED_TARGETS}
-  )
+# exmple_plugin_manager
+add_library(example_plugin_manager src/example_plugin_manager.cpp)
 
-target_link_libraries(ExamplePluginManager
-  ${catkin_LIBRARIES}
-  )
+ament_target_dependencies(example_plugin_manager
+  mrs_lib
+  pluginlib
+  rclcpp
+)
 
-## --------------------------------------------------------------
-## |                           Install                          |
-## --------------------------------------------------------------
+target_include_directories(example_plugin_manager PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${mrs_lib_INCLUDE_DIRS}
+)
 
-install(TARGETS ${LIBRARIES}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-  )
+pluginlib_export_plugin_description_file(example_plugin_manager plugins.xml)
 
-install(DIRECTORY launch config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
-install(DIRECTORY include/example_plugin_manager/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  )
+install(
+  TARGETS example_plugin_manager
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
-install(FILES nodelets.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  )
+ament_export_libraries(
+  example_plugin_manager
+)
+
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
+
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()
