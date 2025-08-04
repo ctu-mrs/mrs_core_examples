@@ -9,7 +9,7 @@
 namespace example_plugin_manager
 {
 
-class Plugin : public rclcpp::Node
+class Plugin
 {
     public:
 
@@ -20,7 +20,7 @@ class Plugin : public rclcpp::Node
 
         virtual void deactivate(void) = 0;
 
-        virtual const std::optional<double> update() = 0;
+        virtual const std::optional<double> update(const Eigen::Vector3d& input) = 0;
 
         virtual ~Plugin() = default;
 };

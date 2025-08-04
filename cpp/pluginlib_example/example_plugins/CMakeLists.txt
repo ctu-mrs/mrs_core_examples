@@ -15,6 +15,7 @@ set(DEPENDENCIES
   ament_cmake
   pluginlib
   rclcpp
+  mrs_lib
   example_plugin_manager
 )
 
@@ -22,8 +23,9 @@ foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
 endforeach()
 
-
-# exmple_plugins
+# |-------------------------------------------|
+# |               Example Plugin              |
+# |-------------------------------------------|
 add_library(ExamplePlugin src/example_plugins.cpp)
 
 ament_target_dependencies(ExamplePlugin
@@ -34,17 +36,13 @@ ament_target_dependencies(ExamplePlugin
 )
 
 target_include_directories(ExamplePlugin PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
   ${mrs_lib_INCLUDE_DIRS}
+  ${example_plugin_manager_INCLUDE_DIRS}
 )
 
-pluginlib_export_plugin_description_file(ExamplePlugin plugins.xml)
+pluginlib_export_plugin_description_file(example_plugin_manager plugins.xml)
 
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
+#|-----------------------------------------------------|
 
 install(
   TARGETS ExamplePlugin
@@ -60,7 +58,7 @@ ament_export_libraries(
 )
 
 ament_export_targets(
-  export_${PROJECT_NAME}
+  export_${PROJECT_NAME}  
 )
 
 ament_package()

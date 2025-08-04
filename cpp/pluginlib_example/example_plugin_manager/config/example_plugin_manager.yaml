@@ -10,3 +10,5 @@ plugins : [
 initial_plugin: "ExamplePlugin2"
 
 update_timer_rate: 1 # [Hz]
+
+pi: 3.14

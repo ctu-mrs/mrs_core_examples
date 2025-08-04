@@ -1,5 +1,0 @@
-<library path="example_plugin_manager">
-  <class type="example_plugin_manager::example_plugin" base_class_type="rclcpp::Node>
-    <description>This is a example_plugin manager.</description>
-  </class>
-</library>

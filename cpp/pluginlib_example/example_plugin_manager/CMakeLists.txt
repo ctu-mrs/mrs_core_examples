@@ -16,20 +16,25 @@ set(DEPENDENCIES
   pluginlib
   rclcpp
   mrs_lib
+  rclcpp_components
 )
 
 foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
 endforeach()
 
+set(LIBRARIES
+  example_plugin_manager
+  )
 
 # exmple_plugin_manager
-add_library(example_plugin_manager src/example_plugin_manager.cpp)
+add_library(example_plugin_manager SHARED src/example_plugin_manager.cpp)
 
 ament_target_dependencies(example_plugin_manager
   mrs_lib
   pluginlib
   rclcpp
+  rclcpp_components
 )
 
 target_include_directories(example_plugin_manager PUBLIC
@@ -38,7 +43,8 @@ target_include_directories(example_plugin_manager PUBLIC
   ${mrs_lib_INCLUDE_DIRS}
 )
 
-pluginlib_export_plugin_description_file(example_plugin_manager plugins.xml)
+# each component (nodelet) needs to be registered to make it discoverable at runtime
+rclcpp_components_register_nodes(example_plugin_manager "example_plugin_manager::ExamplePluginManager" EXECUTABLE ExamplePluginManager)
 
 install(
   DIRECTORY include/
@@ -46,33 +52,33 @@ install(
 )
 
 install(
-  TARGETS example_plugin_manager
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
+  TARGETS ${LIBRARIES}
   EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ament_export_libraries(
-  example_plugin_manager
+  ${LIBRARIES}
 )
 
 ament_export_targets(
-  export_${PROJECT_NAME}
+  export_${PROJECT_NAME} 
 )
 
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+ament_export_include_directories(
+  include
+)
 
 ament_package()

@@ -1,22 +1,22 @@
 #include <rclcpp/rclcpp.hpp>
-#include <rclcpp/package.hpp>
 
 #include <example_plugin_manager/plugin_interface.h>
 
-#include <mrs_lib/param_loader.hpp>
+#include <mrs_lib/param_loader.h>
 
 
 namespace example_plugins
 {
 
-namespace example_plugin
-{
+// namespace example_plugin
+// {
 
 /* class ExamplePlugin //{ */
 
 class ExamplePlugin : public example_plugin_manager::Plugin {
 
 public:
+  ExamplePlugin();
   void initialize(std::shared_ptr<rclcpp::Node> parent_node_, const std::string& name, const std::string& name_space,
                   std::shared_ptr<example_plugin_manager::CommonHandlers_t> common_handlers);
 
@@ -30,14 +30,24 @@ public:
 
   std::string _name_;
 
+
+
 private:
-  bool is_initialized_ = false;
+  rclcpp::Node::SharedPtr node_;
+  bool            is_initialized_ = false;
+
+  bool loaded_successfully = true;
+
   bool is_active_      = false;
 
   std::shared_ptr<example_plugin_manager::CommonHandlers_t> common_handlers_;
 };
 
 //}
+
+ExamplePlugin::ExamplePlugin(){
+  std::cout << "Plugin initiated";
+}
 
 // | -------------------- plugin interface -------------------- |
 
@@ -46,7 +56,7 @@ private:
 void ExamplePlugin::initialize(std::shared_ptr<rclcpp::Node> parent_node_, const std::string& name, const std::string& name_space,
                                std::shared_ptr<example_plugin_manager::CommonHandlers_t> common_handlers) {
 
-  //node_ will behave just like normal Nodehandle
+  //node_ is same as the parent node and there are the parameters
   node_ = parent_node_;
 
   _name_ = name;
@@ -55,15 +65,15 @@ void ExamplePlugin::initialize(std::shared_ptr<rclcpp::Node> parent_node_, const
   common_handlers_ = common_handlers;
 
   // | ------------------- loading parameters ------------------- |
+  mrs_lib::ParamLoader param_loader(node_);
 
-  param_loader =  mr_lib::param_loader(node_, "ExamplePlugin");
-
-  param_loader.addYamlfromparam('config');
+  
+  param_loader.addYamlFileFromParam("config");
 
   // can load params like in a ROS node
-  param_loader.loadParam("pi", _pi_);
+  loaded_successfully &= param_loader.loadParam("pi", _pi_);
 
-  if (!load_successfully) {
+  if (!loaded_successfully) {
     RCLCPP_ERROR(node_->get_logger(), "[%s]: could not load all parameters!", _name_.c_str());
     rclcpp::shutdown();
   }
@@ -134,8 +144,8 @@ const std::optional<double> ExamplePlugin::update(const Eigen::Vector3d& input) 
 
 //}
 
-}  // namespace example_plugin
+// }  // namespace example_plugin
 }  // namespace example_plugins
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(example_plugins::example_plugin::ExamplePlugin, example_plugin_manager::Plugin)
+PLUGINLIB_EXPORT_CLASS(example_plugins::ExamplePlugin, example_plugin_manager::Plugin)

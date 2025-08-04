@@ -100,6 +100,9 @@ void ExamplePluginManager::initialize() {
 
   mrs_lib::ParamLoader param_loader(node_, "ExamplePluginManager");
 
+  param_loader.addYamlFileFromParam("config");
+  param_loader.addYamlFileFromParam("plugin_config");
+
   param_loader.loadParam("update_timer_rate", _rate_timer_update_);
   param_loader.loadParam("initial_plugin", _initial_plugin_name_);
 
@@ -163,6 +166,7 @@ void ExamplePluginManager::initialize() {
   for (int i = 0; i < int(plugin_list_.size()); i++) {
     try {
       std::map<std::string, PluginParams>::iterator it;
+
       it = plugins_.find(_plugin_names_[i]);
 
       RCLCPP_INFO(node_->get_logger(), "[ExamplePluginManager]: initializing the plugin '%s'", it->second.address.c_str());
@@ -274,5 +278,6 @@ double ExamplePluginManager::vectorNorm(const Eigen::Vector3d& input) {
 
 }// namespace example_plugin_manager
 
-#include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(example_plugin_manager ::ExamplePluginManager, rclcpp::Node)
+#include "rclcpp_components/register_node_macro.hpp"
+// register the node 
+RCLCPP_COMPONENTS_REGISTER_NODE(example_plugin_manager::ExamplePluginManager)
