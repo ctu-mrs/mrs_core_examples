@@ -1,4 +1,4 @@
-<library path="lib/libExampleTracker">
+<library path="ExampleTracker">
   <class name="example_tracker_plugin/ExampleTracker" type="example_tracker_plugin::example_tracker::ExampleTracker" base_class_type="mrs_uav_managers::Tracker">
     <description>This is the example tracker.</description>
   </class>
