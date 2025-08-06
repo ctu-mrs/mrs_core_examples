@@ -9,7 +9,7 @@
 #include <mrs_lib/attitude_converter.h>
 #include <mrs_lib/geometry/cyclic.h>
 
-#include <example_tracker_plugin/example_trackerConfig.h>
+#include <example_tracker_plugin/example_tracker_config.h>
 
 
 // }
@@ -96,13 +96,10 @@ private:
 
   // | --------------- dynamic reconfigure server --------------- |
 
-  boost::recursive_mutex                                mutex_drs_;
-  typedef example_tracker_plugin::example_trackerConfig DrsConfig_t;
-  typedef dynamic_reconfigure::Server<DrsConfig_t>      Drs_t;
-  boost::shared_ptr<Drs_t>                              drs_;
-  void                                                  callbackDrs(example_tracker_plugin::example_trackerConfig &config, uint32_t level);
-  DrsConfig_t                                           drs_params_;
+  std::shared_ptr<mrs_lib::DynparamMgr> dynparam_mgr_;  
   std::mutex                                            mutex_drs_params_;
+  template <typename T>
+  void callbackDynamicReconfigure(const & config, const T& value)
 
 };
 
@@ -114,8 +111,6 @@ private:
 
 bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers, std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers) {
 
-  
-
   this->common_handlers_  = common_handlers;
   this->private_handlers_ = private_handlers;
 
@@ -124,7 +119,7 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
 
   _uav_name = common_handlers->uav_name;
 
-  last_update_time_ = rclcpp::Timerbase::clock();
+  last_update_time_ = clock_.now();
 
   // | -------------------- load param files -------------------- |
 
@@ -179,6 +174,7 @@ std::tuple<bool, std::string> ExampleTracker::activate([[maybe_unused]] const st
     goal_y_       = pos_y_;
     goal_z_       = pos_z_;
     goal_heading_ = heading_;
+
   }else
   {
     auto uav_state = mrs_lib::get_mutexed(mutex_uav_state_, uav_state_);
@@ -302,7 +298,7 @@ std::optional<mrs_msgs::msg::TrackerCommand> ExampleTracker::update([[maybe_unus
 
   mrs_msgs::TrackerCommand tracker_cmd;
 
-  tracker_cmd.header.stamp    = ros::Time::now();
+  tracker_cmd.header.stamp    = clock_.now();
   tracker_cmd.header.frame_id = uav_state.header.frame_id;
 
   tracker_cmd.position.x = pos_x_;
