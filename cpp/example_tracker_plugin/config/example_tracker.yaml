@@ -1,2 +1,4 @@
-some_parameter: 1.0 # [-]
-different_parameter: 2
+mrs_uav_trackers:
+  example_tracker:
+    some_parameter: 1.0 # [-]
+    different_parameter: 2

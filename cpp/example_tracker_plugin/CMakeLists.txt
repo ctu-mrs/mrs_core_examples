@@ -24,14 +24,13 @@ foreach(DEP IN LISTS DEPENDENCIES)
 endforeach()
 
 
-
 include_directories(
   include
 )
 
 
 #--------------------------------------------------------------|
-#                         Example Plugin                       |    
+#                  Example Tracker Plugin                      |    
 #--------------------------------------------------------------|
 
 add_library(ExampleTracker src/example_tracker.cpp)
@@ -52,8 +51,6 @@ target_include_directories(ExampleTracker PUBLIC
 
 pluginlib_export_plugin_description_file(mrs_uav_managers plugins.xml)
 
-
-
 ## --------------------------------------------------------------
 ## |                           Install                          |
 ## --------------------------------------------------------------
@@ -65,10 +62,17 @@ install(TARGETS ExampleTracker
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
   )
+
 install(
   DIRECTORY include/
   DESTINATION include
 )
+
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_export_libraries(
   ExamplePlugin
 )

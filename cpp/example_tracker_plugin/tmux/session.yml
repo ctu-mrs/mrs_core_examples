@@ -5,8 +5,12 @@ socket_name: mrs
 attach: false
 tmux_options: -f /etc/ctu-mrs/tmux.conf
 # you can modify these
-pre_window: export UAV_NAME=uav1; export RUN_TYPE=simulation; export UAV_TYPE=x500
-startup_window: control
+pre_window: export UAV_NAME=uav1;
+            export UAV_TYPE=x500;
+            export PLATFORM_CONFIG=`ros2 pkg prefix mrs_multirotor_simulator`/share/mrs_multirotor_simulator/config/mrs_uav_system/$UAV_TYPE.yaml;
+            export USE_SIM_TIME="true";
+            export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+startup_window: core
 windows:
   - router:
       layout: tiled
@@ -23,7 +27,7 @@ windows:
   - takeoff:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_autostart automatic_start.py custom_config:=./config/automatic_start.yaml
+        - ros2 launch mrs_uav_autostart automatic_start.py
         - waitForCore && ./takeoff.sh
   # - midair_activation:
   #     # disabled the "takeoff" section and turn on the "individual_takeoff_platform" in the simulator config
@@ -34,6 +38,7 @@ windows:
       layout: tiled
       panes:
         - ros2 run mrs_uav_status status.sh
+  
   - core:
       layout: tiled
       panes:
@@ -46,7 +51,7 @@ windows:
       layout: tiled
       panes:
         - ros2 run rviz2 rviz2 -d ./rviz.rviz
-  - layout:
-      layout: tiled
-      panes:
-        - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json
+  # - layout:
+  #     layout: tiled
+  #     panes:
+  #       - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json

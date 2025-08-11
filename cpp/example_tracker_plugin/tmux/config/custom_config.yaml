@@ -27,3 +27,5 @@ mrs_uav_managers:
 
     max_height_checking:
       enabled: false
+  
+  some_parameter: 1.0
