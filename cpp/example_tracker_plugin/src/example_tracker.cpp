@@ -95,7 +95,7 @@ private:
   // | ---------------- the tracker's inner state --------------- |
 
   std::atomic<bool> is_initialized_ = false;
-  std::atomic<bool> is_active_      = false;
+  std::atomic<bool> is_active_     = false;
 
   double pos_x_   = 0;
   double pos_y_   = 0;
@@ -108,11 +108,10 @@ private:
   std::atomic<bool> first_iteration_ = true;
 
   // | --------------- dynamic reconfigure server --------------- |
-
+  // TODO: basically inherit the dynamic loader in dynparam_mgr_ and then use that to load the local yml file as it is done in the waypoint_flier, delete the config file.
   std::shared_ptr<mrs_lib::DynparamMgr> dynparam_mgr_;
   std::mutex                                            mutex_drs_params_;
   example_tracker_plugin::example_trackerConfig drs_params_;
-  // template <typename T>
   void callbackDrs(const example_tracker_plugin::example_trackerConfig& config, uint32_t level);
 
 };
@@ -147,10 +146,7 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
   param_loader can get parameters which are exclusive to the tracker.
   */
   success &= private_handlers->param_loader->addYamlFile(ament_index_cpp::get_package_share_directory("example_tracker_plugin") + "/config/example_tracker.yaml");
-  if (!success) {
-    RCLCPP_ERROR(node_->get_logger(), "[ExampleTracker]: could not load all parameters!");
-    return false;
-  }
+
   success &= private_handlers->param_loader->loadParam("different_parameter",other_parameter);
 
   success &= private_handlers->parent_param_loader->loadParam("mrs_uav_managers/some_parameter",some_parameter);

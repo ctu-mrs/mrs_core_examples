@@ -49,7 +49,7 @@ target_include_directories(ExampleTracker PUBLIC
   ${mrs_lib_INCLUDE_DIRS}
 )
 
-pluginlib_export_plugin_description_file(mrs_uav_managers plugins.xml)
+
 
 ## --------------------------------------------------------------
 ## |                           Install                          |
@@ -73,12 +73,12 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-ament_export_libraries(
-  ExamplePlugin
-)
+# ament_export_libraries(
+#   ExampleTracker
+# )
 
-ament_export_targets(
-  export_${PROJECT_NAME}  
-)
+# ament_export_targets(
+#   export_${PROJECT_NAME}  
+# )
 
 ament_package()

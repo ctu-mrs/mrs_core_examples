@@ -11,6 +11,7 @@ pre_window: export UAV_NAME=uav1;
             export USE_SIM_TIME="true";
             export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 startup_window: core
+
 windows:
   - router:
       layout: tiled
@@ -29,11 +30,7 @@ windows:
       panes:
         - ros2 launch mrs_uav_autostart automatic_start.py
         - waitForCore && ./takeoff.sh
-  # - midair_activation:
-  #     # disabled the "takeoff" section and turn on the "individual_takeoff_platform" in the simulator config
-  #     layout: tiled
-  #     panes:
-  #       - waitForControl; rosservice call /$UAV_NAME/hw_api/arming 1; rosservice call /$UAV_NAME/uav_manager/midair_activation
+
   - status:
       layout: tiled
       panes:
