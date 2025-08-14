@@ -19,7 +19,6 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-#include <example_tracker_plugin/example_tracker_config.h>
 
 
 // }
@@ -77,7 +76,7 @@ private:
   std::mutex         mutex_uav_state_;
 
   // |--------------------ros parameters -------------------------|
-  double some_parameter;
+  double _some_parameter_;
   int other_parameter;
 
   // | ------------------ dynamics constriants ------------------ |
@@ -108,11 +107,10 @@ private:
   std::atomic<bool> first_iteration_ = true;
 
   // | --------------- dynamic reconfigure server --------------- |
-  // TODO: basically inherit the dynamic loader in dynparam_mgr_ and then use that to load the local yml file as it is done in the waypoint_flier, delete the config file.
-  std::shared_ptr<mrs_lib::DynparamMgr> dynparam_mgr_;
-  std::mutex                                            mutex_drs_params_;
-  example_tracker_plugin::example_trackerConfig drs_params_;
-  void callbackDrs(const example_tracker_plugin::example_trackerConfig& config, uint32_t level);
+  std::shared_ptr<mrs_lib::DynparamMgr>            dynparam_mgr_;
+  std::mutex                                   mutex_dynamic_reconfigure_;
+
+  void callbackDrs(const std::string param_name, [[maybe_unused]] uint32_t level);
 
 };
 
@@ -145,11 +143,22 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
   parent_param_loader has parameters passed to mrs_uav_manager(which are in yml file passed to the mrs_uav_core)
   param_loader can get parameters which are exclusive to the tracker.
   */
+
+  // mrs_lib::ParamLoader param_loader(node_);
+
+  dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_dynamic_reconfigure_);
+
+  // param_loader.addYamlFileFromParam("config");
   success &= private_handlers->param_loader->addYamlFile(ament_index_cpp::get_package_share_directory("example_tracker_plugin") + "/config/example_tracker.yaml");
+
+  dynparam_mgr_->get_param_provider().copyYamls(private_handlers->param_loader->getParamProvider());
+  
+  const auto result = dynparam_mgr_->register_param("mrs_uav_trackers/example_tracker/some_parameter", &_some_parameter_);
+  std::cout << "Dynamic param loaded : " <<  result << std::endl; 
 
   success &= private_handlers->param_loader->loadParam("different_parameter",other_parameter);
 
-  success &= private_handlers->parent_param_loader->loadParam("mrs_uav_managers/some_parameter",some_parameter);
+  success &= private_handlers->parent_param_loader->loadParam("mrs_uav_managers/some_parameter",_some_parameter_);
 
 
   if (!success) {
@@ -499,11 +508,12 @@ const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleTr
 
 /* //{ callbackDrs() */
 
-void ExampleTracker::callbackDrs(const example_tracker_plugin::example_trackerConfig &config, [[maybe_unused]] uint32_t level) {
-
-  mrs_lib::set_mutexed(mutex_drs_params_, config, drs_params_);
-
-  RCLCPP_INFO(node_->get_logger(), "[Exampletracker]: dynamic reconfigure params updated");
+void ExampleTracker::callbackDrs(const std::string param_name, [[maybe_unused]] uint32_t level) {
+  
+  // In ros2 updating of the parameters is handled by DynparamMgr class.
+  // callback function to be used for logging and triggering action with dynamic parameter change.
+  
+  RCLCPP_INFO(node_->get_logger(), "[Exampletracker]: dynamic reconfigure params updated",param_name.c_str());
 }
 
 //}

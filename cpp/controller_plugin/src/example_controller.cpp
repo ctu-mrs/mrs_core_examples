@@ -9,8 +9,11 @@
 #include <mrs_lib/attitude_converter.h>
 #include <mrs_lib/geometry/cyclic.h>
 
+#include <mrs_lib/dynparam_mgr.h>
+
 #include <pid.hpp>
 
+#include <ament_index_cpp/get_package_share_directory.hpp>
 // #include <example_controller_plugin/example_controllerConfig.h>
 
 //}
@@ -18,6 +21,15 @@
 
 namespace example_controller_plugin
 {
+
+struct DrsParams
+{
+  double roll;
+  double pitch;
+  double yaw;
+  double force;
+};
+
 
 namespace example_controller
 {
@@ -27,28 +39,30 @@ namespace example_controller
 class ExampleController : public mrs_uav_managers::Controller {
 
 public:
-  bool initialize(const rclcpp::Node::SharedPtr& node_, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
+  bool initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
                   std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers);
 
   bool activate(const ControlOutput& last_control_output);
 
   void deactivate(void);
 
-  void updateInactive(const mrs_msgs::msg::UavState& uav_state, const std::optional<mrs_msgs::TrackerCommand>& tracker_command);
+  void destroy();
 
-  ControlOutput updateActive(const mrs_msgs::msg::UavState& uav_state, const mrs_msgs::TrackerCommand& tracker_command);
+  void updateInactive(const mrs_msgs::msg::UavState& uav_state, const std::optional<mrs_msgs::msg::TrackerCommand>& tracker_command);
 
-  const mrs_msgs::ControllerStatus getStatus();
+  ControlOutput updateActive(const mrs_msgs::msg::UavState& uav_state, const mrs_msgs::msg::TrackerCommand& tracker_command);
 
-  void switchOdometrySource(const mrs_msgs::UavState& new_uav_state);
+  const mrs_msgs::msg::ControllerStatus getStatus();
+
+  void switchOdometrySource(const mrs_msgs::msg::UavState& new_uav_state);
 
   void resetDisturbanceEstimators(void);
 
-  const std::shared_ptr<mrs_msgs::DynamicsConstraintsSrvResponse> setConstraints(const mrs_msgs::DynamicsConstraintsSrvRequest::ConstPtr& cmd);
+  const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>  setConstraints(const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request> &constraints);
 
 private:
-  rclcpp::Node::SharePtr node_;
-  rclcpp::TimerBase::SharePtr clock_;
+  rclcpp::Node::SharedPtr node_;
+  rclcpp::Clock::SharedPtr clock_;
 
 
   bool is_initialized_ = false;
@@ -59,22 +73,20 @@ private:
 
   // | ------------------------ uav state ----------------------- |
 
-  mrs_msgs::UavState uav_state_;
+  mrs_msgs::msg::UavState uav_state_;
   std::mutex         mutex_uav_state_;
 
-  // | --------------- dynamic reconfigure server --------------- |
 
-  std::recursive_mutex                                      mutex_drs_;
-  typedef example_controller_plugin::example_controllerConfig DrsConfig_t;
-  typedef dynamic_reconfigure::Server<DrsConfig_t>            Drs_t;
-  void                                                        callbackDrs(example_controller_plugin::example_controllerConfig& config, uint32_t level);
-  DrsConfig_t                                                 drs_params_;
-  std::mutex                                                  mutex_drs_params_;
+  // | --------------- dynamic reconfigure server --------------- |
+  std::shared_ptr<mrs_lib::DynparamMgr>       dynparam_mgr_;
+  std::mutex                     mutex_dynamic_reconfigure_;
+  DrsParams drs_params_;
+  void callbackDrs(const std::string param_name, int level);
 
   // | ----------------------- constraints ---------------------- |
 
-  mrs_msgs::DynamicsConstraints constraints_;
-  std::mutex                    mutex_constraints_;
+  mrs_msgs::msg::DynamicsConstraints constraints_;
+  std::mutex                   mutex_constraints_;
 
   // | --------- throttle generation and mass estimation -------- |
 
@@ -108,26 +120,34 @@ bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::sha
 
     _uav_mass_ = common_handlers->getMass();
 
-    last_update_time = clock_->now();
+    last_update_time_ = clock_->now();
 
     bool success = true;
+    
+    // TODO: callback function for drs
+    dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_dynamic_reconfigure_);
 
+    success &= private_handlers->param_loader->addYamlFile(ament_index_cpp::get_package_share_directory("controller_plugin") + "/config/example_controller.yaml");
 
+    dynparam_mgr_->get_param_provider().copyYamls(private_handlers->param_loader->getParamProvider());
 
-    success &= private_handlers->loadConfigFile();
+    dynparam_mgr_->register_param("desired_roll",&drs_params_.roll);
+    dynparam_mgr_->register_param("desired_pitch",&drs_params_.pitch);
+    dynparam_mgr_->register_param("desired_yaw",&drs_params_.yaw);
+    dynparam_mgr_->register_param("desired_thrust_force",&drs_params_.force);
 
     if (!success) {
         return false;
     }
 
-    param_loader->loadParam("desired_roll", drs_params_.roll);
-    param_loader->loadParam("desired_pitch", drs_params_.pitch);
-    param_loader->loadParam("desired_yaw", drs_params_.yaw);
-    param_loader->loadParam("desired_thrust_force", drs_params_.force);
+    private_handlers->param_loader->loadParam("desired_roll", drs_params_.roll);
+    private_handlers->param_loader->loadParam("desired_pitch", drs_params_.pitch);
+    private_handlers->param_loader->loadParam("desired_yaw", drs_params_.yaw);
+    private_handlers->param_loader->loadParam("desired_thrust_force", drs_params_.force);
 
     // | ------------------ finish loading params ----------------- |
 
-    if (!param_loader.loadedSuccessfully()) {
+    if (!success) {
         RCLCPP_ERROR(node_->get_logger(), "[ExampleController]: could not load all parameters!");
         return false;
     }
@@ -171,11 +191,23 @@ void ExampleController::deactivate(void) {
 
 //}
 
+/* //{ deactivate() */
+
+void ExampleController::destroy(void) {
+
+  is_active_       = false;
+  first_iteration_ = false;
+
+  RCLCPP_INFO(node_->get_logger(), "[ExampleController]: destroyed");
+}
+
+//}
+
 /* updateInactive() //{ */
 
-void ExampleController::updateInactive(const std::shared_ptr<mrs_msgs::msg::UavState> uav_state, [[maybe_unused]] const std::optional<mrs_msgs::TrackerCommand> tracker_command) {
+void ExampleController::updateInactive(const mrs_msgs::msg::UavState &uav_state, [[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand>& tracker_command) {
 
-  mrs_lib::set_mutexed(mutex_uav_state_, uav_state, uav_state_);
+  mrs_lib::set_mutexed(mutex_dynamic_reconfigure_, uav_state, uav_state_);
 
   last_update_time_ = uav_state.header.stamp;
 
@@ -186,9 +218,9 @@ void ExampleController::updateInactive(const std::shared_ptr<mrs_msgs::msg::UavS
 
 /* //{ updateActive() */
 
-ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs::UavState& uav_state, const mrs_msgs::TrackerCommand& tracker_command) {
+ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs::msg::UavState &uav_state, const mrs_msgs::msg::TrackerCommand& tracker_command) {
 
-    auto drs_params = mrs_lib::get_mutexed(mutex_drs_params_, drs_params_);
+    auto drs_params = mrs_lib::get_mutexed(mutex_dynamic_reconfigure_, drs_params_);
 
     mrs_lib::set_mutexed(mutex_uav_state_, uav_state, uav_state_);
 
@@ -210,10 +242,10 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
         dt               = 0.01;
         first_iteration_ = false;
     } else {
-        dt = uav_state.header.stamp - last_update_time_;
+        dt = rclcpp::Time(uav_state.header.stamp).seconds() - last_update_time_.seconds();
     }
 
-    last_update_time_ = uav_state.header.stamp;
+    last_update_time_ = rclcpp::Time(uav_state.header.stamp);
 
     if (fabs(dt) < 0.001) {
 
@@ -225,7 +257,7 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
 
     // you can decide what to return, but it needs to be available
     if (common_handlers_->control_output_modalities.attitude) {
-        RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock, 1.0, "[ExampleController]: desired attitude output modality is available");
+        RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock_, 1.0, "[ExampleController]: desired attitude output modality is available");
     }
 
     // | ---------- extract the detailed model parameters --------- |
@@ -234,12 +266,12 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
 
         mrs_uav_managers::control_manager::DetailedModelParams_t detailed_model_params = common_handlers_->detailed_model_params.value();
 
-        RCLCPP_INFO_STREAM_THROTTLE(node_, *clock, 1.0, "[ExampleController]: UAV inertia is: " << detailed_model_params.inertia);
+        RCLCPP_INFO_STREAM_THROTTLE(node_->get_logger(), *clock_, 1.0, "[ExampleController]: UAV inertia is: " << detailed_model_params.inertia);
     }
 
     // | -------------- prepare the control reference ------------- |
 
-    geometry_msgs::PoseStamped position_reference;
+    geometry_msgs::msg::PoseStamped position_reference;
 
     position_reference.header           = tracker_command.header;
     position_reference.pose.position    = tracker_command.position;
@@ -247,7 +279,7 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
 
     // | ---------------- prepare the control output --------------- |
 
-    mrs_msgs::HwApiAttitudeCmd attitude_cmd;
+    mrs_msgs::msg::HwApiAttitudeCmd attitude_cmd;
 
     attitude_cmd.orientation = mrs_lib::AttitudeConverter(drs_params.roll, drs_params.pitch, drs_params.yaw);
     attitude_cmd.throttle    = mrs_lib::quadratic_throttle_model::forceToThrottle(common_handlers_->throttle_model,
@@ -282,9 +314,9 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
 //}
 /* //{ getStatus() */
 
-const mrs_msgs::ControllerStatus ExampleController::getStatus() {
+const mrs_msgs::msg::ControllerStatus ExampleController::getStatus() {
 
-  mrs_msgs::ControllerStatus controller_status;
+  mrs_msgs::msg::ControllerStatus controller_status;
 
   controller_status.active = is_active_;
 
@@ -295,7 +327,7 @@ const mrs_msgs::ControllerStatus ExampleController::getStatus() {
 
 /* switchOdometrySource() //{ */
 
-void ExampleController::switchOdometrySource([[maybe_unused]] const mrs_msgs::UavState& new_uav_state) {
+void ExampleController::switchOdometrySource([[maybe_unused]] const mrs_msgs::msg::UavState& new_uav_state) {
 }
 
 //}
@@ -310,22 +342,23 @@ void ExampleController::resetDisturbanceEstimators(void) {
 
 /* setConstraints() //{ */
 
-const mrs_msgs::DynamicsConstraintsSrvResponse::ConstPtr ExampleController::setConstraints([
-    [maybe_unused]] const mrs_msgs::DynamicsConstraintsSrvRequest::ConstPtr& constraints) {
+const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>  ExampleController::setConstraints([
+    [maybe_unused]] const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request>& constraints) {
 
   if (!is_initialized_) {
-    return mrs_msgs::DynamicsConstraintsSrvResponse::ConstPtr(new mrs_msgs::DynamicsConstraintsSrvResponse());
+    return std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>(new mrs_msgs::srv::DynamicsConstraintsSrv::Response());
   }
 
   mrs_lib::set_mutexed(mutex_constraints_, constraints->constraints, constraints_);
 
   RCLCPP_INFO(node_->get_logger(), "[ExampleController]: updating constraints");
 
-  mrs_msgs::DynamicsConstraintsSrvResponse res;
+  mrs_msgs::srv::DynamicsConstraintsSrv::Response res;
   res.success = true;
   res.message = "constraints updated";
 
-  return mrs_msgs::DynamicsConstraintsSrvResponse::ConstPtr(new mrs_msgs::DynamicsConstraintsSrvResponse(res));
+  return std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>(new mrs_msgs::srv::DynamicsConstraintsSrv::Response(res));
+  
 }
 
 //}
@@ -337,11 +370,12 @@ const mrs_msgs::DynamicsConstraintsSrvResponse::ConstPtr ExampleController::setC
 
 /* //{ callbackDrs() */
 
-void ExampleController::callbackDrs(example_controller_plugin::example_controllerConfig& config, [[maybe_unused]] uint32_t level) {
+void ExampleController::callbackDrs(const std::string param_name,[[maybe_unused]] int level) {
 
-  mrs_lib::set_mutexed(mutex_drs_params_, config, drs_params_);
+  // In ros2 updating of the parameters is handled by DynparamMgr class.
+  // callback function to be used for logging and triggering action with dynamic parameter change.
 
-  RCLCPP_INFO(node_->get_logger(),"[ExampleController]: dynamic reconfigure params updated");
+  RCLCPP_INFO(node_->get_logger(),"[ExampleController]: dynamic reconfigure params updated" ,param_name.c_str());
 }
 
 //}

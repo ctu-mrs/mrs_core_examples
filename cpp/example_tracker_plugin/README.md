@@ -3,7 +3,7 @@
 Example tracker plugin for the MRS Control Manager. 
 
 Tracker plugin is a way to write a plugin for custom tracker. 
-Information about already implemented tracker plugins are [here](https://ctu-mrs.github.io/docs/features/trackers/).
+Information about already implemented tracker plugins is [here](https://ctu-mrs.github.io/docs/features/trackers/).
 
 Tracker plugin is initialised inside [control_manager](https://github.com/ctu-mrs/mrs_uav_managers/blob/ros2/src/control_manager/control_manager.cpp).
 
