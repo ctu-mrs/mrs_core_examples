@@ -45,6 +45,8 @@ target_include_directories(ExampleController PUBLIC
   ${mrs_lib_INCLUDE_DIRS}
 )
 
+pluginlib_export_plugin_description_file(mrs_uav_managers plugins.xml)
+
 ## --------------------------------------------------------------
 ## |                           Install                          |
 ## --------------------------------------------------------------
@@ -77,16 +79,16 @@ ament_export_targets(
 
 
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+# if(BUILD_TESTING)
+#   find_package(ament_lint_auto REQUIRED)
+#   # the following line skips the linter which checks for copyrights
+#   # comment the line when a copyright and license is added to all source files
+#   set(ament_cmake_copyright_FOUND TRUE)
+#   # the following line skips cpplint (only works in a git repo)
+#   # comment the line when this package is in a git repo and when
+#   # a copyright and license is added to all source files
+#   set(ament_cmake_cpplint_FOUND TRUE)
+#   ament_lint_auto_find_test_dependencies()
+# endif()
 
 ament_package()

@@ -140,10 +140,10 @@ bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::sha
         return false;
     }
 
-    private_handlers->param_loader->loadParam("desired_roll", drs_params_.roll);
-    private_handlers->param_loader->loadParam("desired_pitch", drs_params_.pitch);
-    private_handlers->param_loader->loadParam("desired_yaw", drs_params_.yaw);
-    private_handlers->param_loader->loadParam("desired_thrust_force", drs_params_.force);
+    // private_handlers->param_loader->loadParam("desired_roll", drs_params_.roll);
+    // private_handlers->param_loader->loadParam("desired_pitch", drs_params_.pitch);
+    // private_handlers->param_loader->loadParam("desired_yaw", drs_params_.yaw);
+    // private_handlers->param_loader->loadParam("desired_thrust_force", drs_params_.force);
 
     // | ------------------ finish loading params ----------------- |
 
@@ -375,7 +375,7 @@ void ExampleController::callbackDrs(const std::string param_name,[[maybe_unused]
   // In ros2 updating of the parameters is handled by DynparamMgr class.
   // callback function to be used for logging and triggering action with dynamic parameter change.
 
-  RCLCPP_INFO(node_->get_logger(),"[ExampleController]: dynamic reconfigure params updated" ,param_name.c_str());
+  RCLCPP_INFO(node_->get_logger(),"[ExampleController]: dynamic reconfigure params updated %s" ,param_name.c_str());
 }
 
 //}

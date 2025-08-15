@@ -1,4 +1,6 @@
-desired_roll:         0.03 # [rad]
-desired_pitch:        0.02 # [rad]
-desired_yaw:          0.1 # [rad]
-desired_thrust_force: 0.2 # [N], additional to gravity compensation
+mrs_uav_controllers:
+  example_controller:
+    desired_roll:         0.02 # [rad]
+    desired_pitch:        0.02 # [rad]
+    desired_yaw:          0.5 # [rad]
+    desired_thrust_force: 0.2 # [N], additional to gravity compensation

@@ -128,6 +128,8 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
   node_  = node;
   clock_ = node_->get_clock();
 
+  RCLCPP_INFO(node_->get_logger(), "[ExampleTracker]: node name: ",node_->get_name());
+
   _uav_name = common_handlers->uav_name;
 
   last_update_time_ = clock_->now();
@@ -153,7 +155,7 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
 
   dynparam_mgr_->get_param_provider().copyYamls(private_handlers->param_loader->getParamProvider());
   
-  const auto result = dynparam_mgr_->register_param("mrs_uav_trackers/example_tracker/some_parameter", &_some_parameter_);
+  const auto result = dynparam_mgr_->register_param("some_parameter", &_some_parameter_);
   std::cout << "Dynamic param loaded : " <<  result << std::endl; 
 
   success &= private_handlers->param_loader->loadParam("different_parameter",other_parameter);
