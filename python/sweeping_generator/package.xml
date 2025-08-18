@@ -1,21 +1,18 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sweeping_generator</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="amitsawant2424@gmail.com">amit</maintainer>
+  <license>TODO: License declaration</license>
 
-  <name>example_sweeping_generator</name>
-  <version>1.0.0</version>
-  <description>The Python Example for Sweeping Generator</description>
-
-  <maintainer email="tomas.baca@fel.cvut.cz">Tomas Baca</maintainer>
-  <author email="tomas.baca@fel.cvut.cz">Tomas Baca</author>
-
-  <license>MIT</license>
-
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <depend>rospy</depend>
-  <depend>mrs_msgs</depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>mrs_msgs</test_depend>
 
   <export>
+    <build_type>ament_python</build_type>
   </export>
-
 </package>

@@ -20,8 +20,7 @@ if [ -z $TMUX ]; then
 
 # if we are in tmux
 else
-
   # switch to the newly-started session
   tmux detach-client -E "tmux -L $TMUX_SOCKET_NAME a -t $TMUX_SESSION_NAME" 
-
+  
 fi
