@@ -33,6 +33,7 @@ windows:
           world_config:=./config/world_config.yaml 
           custom_config:=./config/custom_config.yaml 
           network_config:=./config/network_config.yaml
+
   - status:
       layout: tiled
       panes:
@@ -41,26 +42,21 @@ windows:
   - sweeping_generator:
       layout: tiled
       panes:
-        - waitForControl; ros2 launch example_sweeping_generator sweeping_generator.py
-        - 'history -s ros2 service call /$UAV_NAME/sweeping_generator/start 3.0'
-  - example_waypoint_flier:
-      layout: tiled
-      root: ~/ws_mrs/
-      panes:
-        - 'waitForTakeoff && ros2 launch example_waypoint_flier example_waypoint_flier.py'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/start_waypoints_following_in std_srvs/srv/Trigger {}'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/fly_to_first_waypoint_in std_srvs/srv/Trigger {}'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/stop_waypoints_following_in std_srvs/srv/Trigger {}'
+        - waitForControl; ros2 launch sweeping_generator sweeping_generator.launch.py
+        - 'history -s ros2 service call /$UAV_NAME/start mrs_msgs/srv/Vec1 "{goal: 3.0}"'
+
 
   - takeoff:
       layout: tiled
       panes:
         - ros2 launch mrs_uav_autostart automatic_start.py custom_config:=./config/automatic_start.yaml
         - waitForCore && ./takeoff.sh
+
   - rviz:
       layout: tiled
       panes:
         - ros2 run rviz2 rviz2 -d ./rviz.rviz
+  
   - layout:
       layout: tiled
       panes:
