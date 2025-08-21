@@ -22,6 +22,12 @@ def generate_launch_description():
 
     this_pkg_path = get_package_share_directory(pkg_name)
 
+    config = os.path.join(
+        get_package_share_directory('sweeping_generator'),
+        'config',
+        'sweeping_generator.yaml'
+        )
+
     # #{ uav_name 
     ld.add_action(DeclareLaunchArgument(
         'uav_name',
@@ -38,14 +44,11 @@ def generate_launch_description():
     sweeping_generator = Node(
 
             package=pkg_name,
-            # plugin='sweeping_generator::SweepingGenerator',
+        
             namespace=uav_name,
             name='sweeeping_generator',
             executable='sweeping_generator',
-            parameters=[
-                {"uav_name": uav_name}, 
-                {"config": this_pkg_path+'/config/sweeping_generator.yaml'},        
-            ],
+            parameters=[config],
 
             remappings=[
                 # # subscribers

@@ -14,30 +14,29 @@ class SweepingGenerator(Node):
 
     def __init__(self):
         super().__init__('sweeping_generator')
+        self.declare_parameter('frame_id',"world_origi")
 
-        self.declare_parameter("frame_id","world_origin")
+        self.declare_parameter("center.x",0.0)
+        self.declare_parameter("center.y",0.0)
+        self.declare_parameter("center.z",3.0)
 
-        self.declare_parameter("center/x",0.0)
-        self.declare_parameter("center/y",0.0)
-        self.declare_parameter("center/z",2.0)
+        self.declare_parameter("dimensions.x",10.0)
+        self.declare_parameter("dimensions.y",10.0)
 
-        self.declare_parameter("dimensions/x",20.0)
-        self.declare_parameter("dimensions/y",20.0)
+        self.declare_parameter("timer_main.rate",1.0)
 
-        self.declare_parameter("timer_main/rate",1.0)
+        self.frame_id = self.get_parameter('frame_id').value
 
-        self.frame_id = self.get_parameter("frame_id").value
+        self.center_x = self.get_parameter("center.x").value
+        self.center_y = self.get_parameter("center.y").value
+        self.center_z = self.get_parameter("center.z").value
 
-        self.center_x = self.get_parameter("center/x").value
-        self.center_y = self.get_parameter("center/y").value
-        self.center_z = self.get_parameter("center/z").value
+        self.dimensions_x = self.get_parameter("dimensions.x").value
+        self.dimensions_y = self.get_parameter("dimensions.y").value
 
-        self.dimensions_x = self.get_parameter("dimensions/x").value
-        self.dimensions_y = self.get_parameter("dimensions/y").value
+        self.timer_main_rate = self.get_parameter("timer_main.rate").value
 
-        self.timer_main_rate = self.get_parameter("timer_main/rate").value
-
-        self.get_logger().info(f"[SweepingGenerator]: value of self.dimensions_x: {self.dimensions_x}")
+        # self.get_logger().info(f"[SweepingGenerator]: value of self.dimensions_x: {self.frame_id} {self.dimensions_x}")
         
         self.sub_control_manager_diag = self.create_subscription(ControlManagerDiagnostics, "~/control_manager_diag_in", self.callback_control_manager_diagnostics, 10)
 
@@ -83,8 +82,9 @@ class SweepingGenerator(Node):
                 point = Reference()
                 point.position.x = self.center_x + i
                 point.position.y = self.center_y + j*sign
-                point.position.z = self.center_z
+                point.position.z = self.center_znow
                 point.heading = 0.0
+                self.get_logger().info(f"point_pos_x: {self.center_x + i}, point_pos_y: {self.center_y + j*sign} point_pos_z: {self.center_z}\n")
                 path_msg.path.points.append(point)
 
             sign *= -1.0
@@ -138,7 +138,7 @@ class SweepingGenerator(Node):
     def timer_main_callback(self):
         if not self.is_initialized:
             return
-
+        
         self.get_logger().info("[SweepingGenerator]: main timer spinning", once=True)
 
         if isinstance(self.sub_control_manager_diag, ControlManagerDiagnostics):

@@ -8,5 +8,5 @@
 
 When ready, call the service prepared in the bottom terminal window:
 ```bash
-rosservice call /$UAV_NAME/sweeping_generator/start 3.0
+ros2 service call /$UAV_NAME/start mrs_msgs/srv/Vec1 "{goal: 3.0}"
 ```
