@@ -1,0 +1,55 @@
+# do not modify these
+root: ./
+name: simulation
+socket_name: mrs
+attach: false
+tmux_options: -f /etc/ctu-mrs/tmux.conf
+# you can modify these
+pre_window: export UAV_NAME=uav1;
+            export UAV_TYPE=x500;
+            export PLATFORM_CONFIG=`ros2 pkg prefix mrs_multirotor_simulator`/share/mrs_multirotor_simulator/config/mrs_uav_system/$UAV_TYPE.yaml;
+            export USE_SIM_TIME="true";
+            export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+startup_window: core
+
+windows:
+  - router:
+      layout: tiled
+      panes:
+        - ros2 run rmw_zenoh_cpp rmw_zenohd
+  - simulator:
+      layout: tiled
+      panes:
+        - ros2 launch mrs_multirotor_simulator multirotor_simulator.py custom_config:=./config/simulator.yaml
+  - hw_api:
+      layout: tiled
+      panes:
+        - ros2 launch mrs_multirotor_simulator hw_api.py
+  - takeoff:
+      layout: tiled
+      panes:
+        - ros2 launch mrs_uav_autostart automatic_start.py
+        - waitForCore && ./takeoff.sh
+
+  - status:
+      layout: tiled
+      panes:
+        - ros2 run mrs_uav_status status.sh
+  
+  - core:
+      layout: tiled
+      panes:
+        - ros2 launch mrs_uav_core core.py 
+          platform_config:=$PLATFORM_CONFIG 
+          world_config:=./config/world_config.yaml 
+          custom_config:=./config/custom_config.yaml 
+          network_config:=./config/network_config.yaml
+  - rviz:
+      layout: tiled
+      panes:
+        - ros2 run rviz2 rviz2 -d ./rviz.rviz
+  
+  # - layout:
+  #     layout: tiled
+  #     panes:
+  #       - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json

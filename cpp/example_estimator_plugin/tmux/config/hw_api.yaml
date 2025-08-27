@@ -1,0 +1,16 @@
+plugin:
+  outputs:
+    distance_sensor:      false
+    gnss:                 true
+    rtk:                  false
+    imu:                  true
+    altitude:             true
+    magnetometer_heading: true
+    rc_channels:          true
+    battery_state:        true
+    position:             true
+    orientation:          true
+    velocity:             true
+    angular_velocity:     true
+    odometry:             false
+    ground_truth:         false
