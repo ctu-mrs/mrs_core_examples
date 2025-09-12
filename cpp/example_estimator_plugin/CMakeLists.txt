@@ -16,12 +16,17 @@ set(DEPENDENCIES
     mrs_lib
     mrs_msgs
     mrs_uav_managers
+    mrs_uav_state_estimators
     )
 
     
 foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
 endforeach()
+
+include_directories(
+  include
+)
 
 # |------------------------------------------------------|
 # |             Example estimator plugin                 |
@@ -32,7 +37,9 @@ ament_target_dependencies(ExampleEstimator
   mrs_lib
   pluginlib
   rclcpp
+  mrs_msgs
   mrs_uav_managers
+  mrs_uav_state_estimators
 )
 
 target_include_directories(ExampleEstimator PUBLIC 
@@ -65,10 +72,12 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-ament_export_libraries(
-  ExampleEstimator
-)
+# ament_export_libraries(
+#   ExampleEstimator
+# )
 
-ament_export_targets(
-  export_${PROJECT_NAME}  
-)
+# ament_export_targets(
+#   export_${PROJECT_NAME}  
+# )
+
+ament_package()

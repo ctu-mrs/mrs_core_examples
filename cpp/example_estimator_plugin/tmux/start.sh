@@ -10,7 +10,7 @@ export TMUX_SESSION_NAME=simulation
 export TMUX_SOCKET_NAME=mrs
 
 # start tmuxinator
-tmuxinator start -p ./session.yml
+tmuxinator start -p ./session.yaml
 
 # if we are not in tmux
 if [ -z $TMUX ]; then
