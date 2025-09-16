@@ -62,16 +62,6 @@ install(TARGETS ExampleEstimator
   INCLUDES DESTINATION include
   )
 
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
-
-install(
-  DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
-
 # ament_export_libraries(
 #   ExampleEstimator
 # )
