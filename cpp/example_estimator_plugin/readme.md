@@ -1,11 +1,17 @@
-# Example estimator plugin:
+# Example Estimator Plugin
 
-## Estimation file structure
-![estimator_dependency_tree (1)](https://hackmd.io/_uploads/B12NLvntgl.jpg)
-The MRS system provides different level of abstraction for developing estimator plugin which are either individual state estimators of comple estimators of UAV state.
+Example estimator plugin for the MRS Estimator Manager. 
 
-Generic estimators for individual states like altitude, lateral and heading are already implemented. 
+Estimator plugin is a way to write a plugin for custom estimator. 
+Information about already implemented estimator plugins is [here](https://ctu-mrs.github.io/docs/plugin-interface/estimators).
 
-StateGeneric combines this partial estimators.
+Information about parameters which can be modified is given [here](https://ctu-mrs.github.io/docs/api/custom_configs). These are to be modified inside `custom_config.yaml` file. Every mrs manager loads parameters from this file before loading any plugins.
 
-StateGeneric can be made specific to perticular sensor setup with parameter modification from yaml files.
+## How to start
+
+```bash
+./tmux/start.sh
+```
+
+
+
