@@ -1,6 +1,17 @@
 mrs_uav_controllers:
+
   example_controller:
-    desired_roll:         0.02 # [rad]
-    desired_pitch:        0.02 # [rad]
-    desired_yaw:          0.5 # [rad]
-    desired_thrust_force: 0.2 # [N], additional to gravity compensation
+
+    antiwindup: true
+
+    pid_gains:
+
+      xyz:
+        p: 1.0
+        i: 0.01
+        d: 0.5
+
+      heading:
+        p: 1.0
+        i: 0.01
+        d: 0.5

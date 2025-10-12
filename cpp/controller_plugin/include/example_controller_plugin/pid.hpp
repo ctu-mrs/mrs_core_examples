@@ -26,7 +26,7 @@ private:
 public:
   PIDController();
 
-  void setParams(const double &kp, const double &kd, const double &ki, const double &saturation, const double &antiwindup);
+  void setParams(const double &kp, const double &ki, const double &kd, const double &saturation, const double &antiwindup);
 
   void setSaturation(const double saturation = -1);
 
@@ -44,11 +44,11 @@ PIDController::PIDController() {
   this->reset();
 }
 
-void PIDController::setParams(const double &kp, const double &kd, const double &ki, const double &saturation, const double &antiwindup) {
+void PIDController::setParams(const double &kp, const double &ki, const double &kd, const double &saturation, const double &antiwindup) {
 
   this->_kp_       = kp;
-  this->_kd_       = kd;
   this->_ki_       = ki;
+  this->_kd_       = kd;
   this->saturation = saturation;
   this->antiwindup = antiwindup;
 }
@@ -71,10 +71,10 @@ double PIDController::update(const double &error, const double &dt) {
   last_error_       = error;
 
   double p_component = _kp_ * error;       // proportional feedback
-  double d_component = _kd_ * difference;  // derivative feedback
   double i_component = _ki_ * integral_;   // derivative feedback
+  double d_component = _kd_ * difference;  // derivative feedback
 
-  double sum = p_component + d_component + i_component;
+  double sum = p_component + i_component + d_component;
 
   if (saturation > 0) {
     if (sum >= saturation) {

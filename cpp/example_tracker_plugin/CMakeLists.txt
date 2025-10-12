@@ -23,14 +23,8 @@ foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
 endforeach()
 
-
-include_directories(
-  include
-)
-
-
 #--------------------------------------------------------------|
-#                  Example Tracker Plugin                      |    
+#                  Example Tracker Plugin                      |
 #--------------------------------------------------------------|
 
 add_library(ExampleTracker src/example_tracker.cpp)
@@ -42,8 +36,7 @@ ament_target_dependencies(ExampleTracker
   mrs_uav_managers
 )
 
-
-target_include_directories(ExampleTracker PUBLIC 
+target_include_directories(ExampleTracker PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${mrs_lib_INCLUDE_DIRS}
@@ -64,11 +57,6 @@ install(TARGETS ExampleTracker
   )
 
 install(
-  DIRECTORY include/
-  DESTINATION include
-)
-
-install(
   DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
@@ -78,7 +66,7 @@ install(
 # )
 
 # ament_export_targets(
-#   export_${PROJECT_NAME}  
+#   export_${PROJECT_NAME}
 # )
 
 ament_package()

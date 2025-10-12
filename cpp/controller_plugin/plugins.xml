@@ -1,5 +1,5 @@
-<library path="ExampleController">
-  <class name="example_controller_plugin/ExampleController" type="example_controller_plugin::example_controller::ExampleController" base_class_type="mrs_uav_managers::Controller">
+<library path="ExampleControllerPlugin_ExampleController">
+  <class name="example_controller_plugin::ExampleController" type="example_controller_plugin::example_controller::ExampleController" base_class_type="mrs_uav_managers::Controller">
     <description>This is the Example Controller.</description>
   </class>
 </library>
