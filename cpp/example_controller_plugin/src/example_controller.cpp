@@ -302,6 +302,9 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
     }
     catch (...) {
       RCLCPP_ERROR_THROTTLE(node_->get_logger(), *clock_, 1000, "failed to calculate UAV's heading");
+
+      // let's set this to the reference, this will cause 0 control error and therefore no wierd control action
+      uav_heading = tracker_command.heading;
     }
   }
 
@@ -376,19 +379,23 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
   // |                 fill in the optional parts                 |
   // --------------------------------------------------------------
 
-  //// it is recommended to fill the optinal parts if you know them
+  // it is recommended to fill the optional parts if you know them
 
-  /// this is used for:
-  // * plotting the orientation in the control_refence topic (optional)
-  // * checking for attitude control error
-  // last_control_output_.desired_orientation = ...;
+  // | ------------------- desired orientation ------------------ |
+
+  /// the "desired_orientation" is used for:
+  // * plotting the orientation in the control_manager/control_refence topic
+  // * checking for attitude control error, which can trigger eland/failsafe
+  // last_control_output_.desired_orientation = mrs_lib::AttitudeConverter(...);
+
+  // | -------------- unbiased desired acceleration ------------- |
 
   /// IMPORANT
-  // The acceleration and heading rate in 3D (expressed in the "fcu" frame of reference) that the UAV will actually undergo due to the control action.
+  // The acceleration and heading rate in 3D (expressed in the "fcu" frame of reference)
+  // that the UAV will actually undergo due to the control action.
   Eigen::Vector3d unbiased_des_acc(0, 0, 0);
 
   {
-
     Eigen::Vector3d unbiased_des_acc_world(cmd.acceleration.x, cmd.acceleration.y, cmd.acceleration.z);
 
     geometry_msgs::msg::Vector3Stamped world_accel;
@@ -406,9 +413,13 @@ ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs:
     }
   }
 
-  // fill the unbiased desired accelerations
+  // fill the unbiased desired acceleration
   last_control_output_.desired_unbiased_acceleration = unbiased_des_acc;
 
+  // | ------------------ desired heading rate ------------------ |
+
+  // the desired heading rate (if known) will be used to calculated feedforward
+  // in the form of desired intrinsic yaw rate
   last_control_output_.desired_heading_rate = cmd.heading_rate;
 
   // | ----------------- fill in the diagnostics ---------------- |

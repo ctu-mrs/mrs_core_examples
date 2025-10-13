@@ -11,7 +11,6 @@ pre_window: export UAV_NAME=uav1;
             export USE_SIM_TIME="true";
             export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 startup_window: core
-
 windows:
   - router:
       layout: tiled
@@ -28,9 +27,8 @@ windows:
   - takeoff:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_autostart automatic_start.launch.py
+        - ros2 launch mrs_uav_autostart automatic_start.launch.py custom_config:=./config/automatic_start.yaml
         - waitForCore && ./takeoff.sh
-
   - status:
       layout: tiled
       panes:
