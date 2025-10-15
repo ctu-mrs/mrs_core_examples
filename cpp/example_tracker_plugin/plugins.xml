@@ -1,5 +1,5 @@
 <library path="ExampleTrackerPlugin_ExampleTracker">
   <class name="example_tracker_plugin::ExampleTracker" type="example_tracker_plugin::ExampleTracker" base_class_type="mrs_uav_managers::Tracker">
-    <description>Example MRS tracker plugin</description>
+    <description>MRS Example Tracker Plugin</description>
   </class>
 </library>

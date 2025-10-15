@@ -35,7 +35,7 @@ set(DEPENDENCIES
 # ... the list is going ot be reused later multiple times
 set(LIBRARIES
   ExampleTrackerPlugin_ExampleTracker
-  )
+)
 
 foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
@@ -82,7 +82,7 @@ install(TARGETS ${LIBRARIES}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
-  )
+)
 
 install(
   DIRECTORY config

@@ -1,5 +1,5 @@
-<library path="ExampleEstimator">
-  <class name="example_estimator_plugin/ExampleEstimator" type="mrs_uav_state_estimators::example_estimator_plugin::ExampleEstimator" base_class_type="mrs_uav_managers::StateEstimator">
-    <description>This is the Example estimator.</description>
+<library path="ExampleEstimatorPlugin_ExampleEstimator">
+  <class name="example_estimator_plugin::ExampleEstimator" type="example_estimator_plugin::ExampleEstimator" base_class_type="mrs_uav_managers::StateEstimator">
+    <description>MRS Example Estimator Plugin</description>
   </class>
 </library>
