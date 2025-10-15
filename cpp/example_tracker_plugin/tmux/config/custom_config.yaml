@@ -3,7 +3,7 @@ mrs_uav_managers:
   control_manager:
 
     ExampleTracker:
-      address: "example_tracker_plugin/ExampleTracker"
+      address: "example_tracker_plugin::ExampleTracker"
       namespace: "example_tracker"
       human_switchable: true
 
@@ -21,11 +21,3 @@ mrs_uav_managers:
     midair_activation:
       after_activation:
         tracker: "ExampleTracker"
-
-    min_height_checking:
-      enabled: false
-
-    max_height_checking:
-      enabled: false
-  
-  some_parameter: 1.0

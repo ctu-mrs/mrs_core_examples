@@ -19,7 +19,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# find dependencies and place them into a list
+# ... the list is going ot be reused later multiple times
 set(DEPENDENCIES
   rclcpp
   rclcpp_components
@@ -30,6 +31,8 @@ set(DEPENDENCIES
   Eigen3
 )
 
+# define our exported libraries and put them into a list
+# ... the list is going ot be reused later multiple times
 set(LIBRARIES
   ExampleControllerPlugin_ExampleController
   )
@@ -40,6 +43,7 @@ endforeach()
 
 include_directories(
   include
+  # you need to explicitly list packages from which you want to include
   ${mrs_lib_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS}
   ${mrs_uav_managers_INCLUDE_DIRS}

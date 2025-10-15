@@ -9,10 +9,9 @@
 #include <mrs_lib/utils.h>
 #include <mrs_lib/attitude_converter.h>
 #include <mrs_lib/geometry/cyclic.h>
-
 #include <mrs_lib/dynparam_mgr.h>
 
-#include <example_controller_plugin/pid.hpp>
+#include <pid.hpp>
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
@@ -20,6 +19,8 @@
 
 namespace example_controller_plugin
 {
+
+/* DrsParams_t //{ */
 
 struct DrsParams_t
 {
@@ -31,8 +32,7 @@ struct DrsParams_t
   double gain_heading_d;
 };
 
-namespace example_controller
-{
+//}
 
 /* //{ class ExampleController */
 
@@ -97,10 +97,10 @@ private:
 
   // | --------------------------- PID -------------------------- |
 
-  example_controller_plugin::PIDController pid_x_;
-  example_controller_plugin::PIDController pid_y_;
-  example_controller_plugin::PIDController pid_z_;
-  example_controller_plugin::PIDController pid_heading_;
+  PIDController pid_x_;
+  PIDController pid_y_;
+  PIDController pid_z_;
+  PIDController pid_heading_;
 
   // | ------------------ activation and output ----------------- |
 
@@ -134,15 +134,20 @@ bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::sha
 
   // | --------------------- load parameters -------------------- |
 
+  // add yaml config from the package's config folder
   private_handlers->param_loader->addYamlFile(ament_index_cpp::get_package_share_directory("example_controller_plugin") + "/config/example_controller.yaml");
 
+  // setup the dynamical reconfigure parameter manager
   dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_dynparam_mgr_);
-
-  private_handlers->param_loader->loadParam("antiwindup", _antiwindup_);
 
   // copy loaded yaml files from the param loader to the dynparam mgr
   dynparam_mgr_->get_param_provider().copyYamls(private_handlers->param_loader->getParamProvider());
 
+  // the parameter is loaded from the namespace of the plugin
+  //    ... that is mrs_uav_managers/example_controller
+  private_handlers->param_loader->loadParam("antiwindup", _antiwindup_);
+
+  // setup dynamically-reconfigurable parameters (gains)
   dynparam_mgr_->register_param("pid_gains/xyz/p", &drs_params_.gain_xyz_p, mrs_lib::DynparamMgr::range_t<double>(0.0, 100.0));
   dynparam_mgr_->register_param("pid_gains/xyz/i", &drs_params_.gain_xyz_i, mrs_lib::DynparamMgr::range_t<double>(0.0, 100.0));
   dynparam_mgr_->register_param("pid_gains/xyz/d", &drs_params_.gain_xyz_d, mrs_lib::DynparamMgr::range_t<double>(0.0, 100.0));
@@ -152,10 +157,10 @@ bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::sha
 
   // | ----------------------- prepare PID ---------------------- |
 
-  pid_x_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, true);
-  pid_y_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, true);
-  pid_z_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, true);
-  pid_heading_.setParams(drs_params_.gain_heading_p, drs_params_.gain_heading_i, drs_params_.gain_heading_d, 1.0, true);
+  pid_x_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, _antiwindup_);
+  pid_y_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, _antiwindup_);
+  pid_z_.setParams(drs_params_.gain_xyz_p, drs_params_.gain_xyz_i, drs_params_.gain_xyz_d, 1.0, _antiwindup_);
+  pid_heading_.setParams(drs_params_.gain_heading_p, drs_params_.gain_heading_i, drs_params_.gain_heading_d, 1.0, _antiwindup_);
 
   // | ------------------ finish loading params ----------------- |
 
@@ -480,9 +485,7 @@ const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleCo
 
 //}
 
-}  // namespace example_controller
-
 }  // namespace example_controller_plugin
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(example_controller_plugin::example_controller::ExampleController, mrs_uav_managers::Controller)
+PLUGINLIB_EXPORT_CLASS(example_controller_plugin::ExampleController, mrs_uav_managers::Controller)

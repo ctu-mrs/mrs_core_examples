@@ -1,5 +1,4 @@
-#ifndef PID_H
-#define PID_H
+#pragma once
 
 #include <math.h>
 
@@ -96,5 +95,3 @@ double PIDController::update(const double &error, const double &dt) {
 }
 
 }  // namespace example_controller_plugin
-
-#endif  // PID_H
