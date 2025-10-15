@@ -5,6 +5,15 @@ project(example_waypoint_flier)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# 1 == use rclcpp::Timer implementation
+# 0 == use MRS's thread timer implementation
+set(USE_ROS_TIMER 0)
+
+if(${USE_ROS_TIMER})
+  MESSAGE(WARNING "[mrs_uav_managers]: Compiling with ROS Timers. This can cause high CPU load in runtime.")
+endif()
 
 # set the compile options to show code warnings
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -12,7 +21,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 SET(DEPENDENCIES
-  ament_cmake
   rclcpp
   rclcpp_components
   geometry_msgs
@@ -28,37 +36,39 @@ foreach(DEP IN LISTS DEPENDENCIES)
 endforeach()
 
 set(LIBRARIES
-  WaypointFlier
+  ExampleWaypointFlier_WaypointFlier
 )
 
 include_directories(
   ${rclcpp_INCLUDE_DIRS}
-  ${colcon_INCLUDE_DIRS}
   ${mrs_lib_INCLUDE_DIRS}
 )
 
-add_library(WaypointFlier SHARED
-  src/example_waypoint_flier.cpp
+## --------------------------------------------------------------
+## |                           compile                          |
+## --------------------------------------------------------------
+
+add_library(ExampleWaypointFlier_WaypointFlier SHARED
+  src/waypoint_flier.cpp
 )
 
-# ament manages cmake related variables and dependency search (similar to catkin in ROS1)
-ament_target_dependencies(WaypointFlier
+ament_target_dependencies(ExampleWaypointFlier_WaypointFlier
   ${DEPENDENCIES}
 )
 
-# each component (nodelet) needs to be registered to make it discoverable at runtime
-rclcpp_components_register_nodes(WaypointFlier PLUGIN "example_waypoint_flier::ExampleWaypointFlier" EXECUTABLE WaypointFlier)
-
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(ExampleWaypointFlier )
+rclcpp_components_register_nodes(ExampleWaypointFlier_WaypointFlier PLUGIN "example_waypoint_flier::WaypointFlier" EXECUTABLE ExampleWaypointFlier_WaypointFlier)
 
 ## --------------------------------------------------------------
 ## |                           install                          |
 ## --------------------------------------------------------------
 
+ament_export_libraries(
+  ${LIBRARIES}
+)
+
 install(
   TARGETS ${LIBRARIES}
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -74,9 +84,18 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY tmux
+  USE_SOURCE_PERMISSIONS
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_export_targets(
+  export_${PROJECT_NAME} HAS_LIBRARY_TARGET
+)
+
 ament_export_dependencies(
   ${DEPENDENCIES}
 )
 
 ament_package()
-
