@@ -49,11 +49,11 @@ include_directories(
   ${mrs_uav_managers_INCLUDE_DIRS}
 )
 
-#--------------------------------------------------------------|
-#                  Example Controller Plugin                      |
-#--------------------------------------------------------------|
+## --------------------------------------------------------------
+## |                  Example Controller Plugin                 |
+## --------------------------------------------------------------
 
-add_library(ExampleControllerPlugin_ExampleController
+add_library(ExampleControllerPlugin_ExampleController SHARED
   src/example_controller.cpp
 )
 

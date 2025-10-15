@@ -52,7 +52,7 @@ include_directories(
 # |             Example estimator plugin                 |
 # |------------------------------------------------------|
 
-add_library(ExampleEstimatorPlugin_ExampleEstimator
+add_library(ExampleEstimatorPlugin_ExampleEstimator SHARED
   src/example_estimator_plugin.cpp
 )
 

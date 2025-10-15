@@ -5,6 +5,7 @@ project(example_plugins)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -12,9 +13,9 @@ endif()
 
 # find dependencies
 set(DEPENDENCIES
-  ament_cmake
-  pluginlib
   rclcpp
+  rclcpp_components
+  pluginlib
   mrs_lib
   example_plugin_manager
 )
@@ -23,42 +24,63 @@ foreach(DEP IN LISTS DEPENDENCIES)
   find_package(${DEP} REQUIRED)
 endforeach()
 
-# |-------------------------------------------|
-# |               Example Plugin              |
-# |-------------------------------------------|
-add_library(ExamplePlugin src/example_plugins.cpp)
+# define our exported libraries and put them into a list
+# ... the list is going ot be reused later multiple times
+set(LIBRARIES
+  ExamplePlugins_ExamplePlugin
+  )
 
-ament_target_dependencies(ExamplePlugin
-  mrs_lib
-  pluginlib
-  rclcpp
-  example_plugin_manager
-)
-
-target_include_directories(ExamplePlugin PUBLIC
+include_directories(
+  include
+  ${rclcpp_INCLUDE_DIRS}
   ${mrs_lib_INCLUDE_DIRS}
   ${example_plugin_manager_INCLUDE_DIRS}
+  )
+
+## --------------------------------------------------------------
+## |                           compile                          |
+## --------------------------------------------------------------
+
+add_library(ExamplePlugins_ExamplePlugin SHARED
+  src/example_plugins.cpp
 )
+
+ament_target_dependencies(ExamplePlugins_ExamplePlugin
+  ${DEPENDENCIES}
+)
+
+## --------------------------------------------------------------
+## |                       export plugins                       |
+## --------------------------------------------------------------
 
 pluginlib_export_plugin_description_file(example_plugin_manager plugins.xml)
 
-#|-----------------------------------------------------|
+## --------------------------------------------------------------
+## |                           install                          |
+## --------------------------------------------------------------
 
-install(
-  TARGETS ExamplePlugin
+ament_export_libraries(
+  ${LIBRARIES}
+)
+
+install(TARGETS ${LIBRARIES}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
 )
 
-ament_export_libraries(
-  ExamplePlugin
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_export_targets(
-  export_${PROJECT_NAME}  
+  export_${PROJECT_NAME} HAS_LIBRARY_TARGET
+)
+
+ament_export_dependencies(
+  ${DEPENDENCIES}
 )
 
 ament_package()

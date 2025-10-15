@@ -52,7 +52,7 @@ include_directories(
 #                  Example Tracker Plugin                      |
 #--------------------------------------------------------------|
 
-add_library(ExampleTrackerPlugin_ExampleTracker
+add_library(ExampleTrackerPlugin_ExampleTracker SHARED
   src/example_tracker.cpp
 )
 

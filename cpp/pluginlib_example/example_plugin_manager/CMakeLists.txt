@@ -5,6 +5,7 @@ project(example_plugin_manager)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -12,11 +13,11 @@ endif()
 
 # find dependencies
 set(DEPENDENCIES
-  ament_cmake
+  rclcpp
+  rclcpp_components
   pluginlib
   rclcpp
   mrs_lib
-  rclcpp_components
 )
 
 foreach(DEP IN LISTS DEPENDENCIES)
@@ -24,32 +25,49 @@ foreach(DEP IN LISTS DEPENDENCIES)
 endforeach()
 
 set(LIBRARIES
-  example_plugin_manager
+  ExamplePluginManager_PluginManager
+)
+
+include_directories(
+  include
+  ${rclcpp_INCLUDE_DIRS}
+  ${mrs_lib_INCLUDE_DIRS}
   )
 
-# exmple_plugin_manager
-add_library(example_plugin_manager SHARED src/example_plugin_manager.cpp)
+## --------------------------------------------------------------
+## |                           Compile                          |
+## --------------------------------------------------------------
 
-ament_target_dependencies(example_plugin_manager
-  mrs_lib
-  pluginlib
-  rclcpp
-  rclcpp_components
+add_library(ExamplePluginManager_PluginManager SHARED
+  src/example_plugin_manager.cpp
 )
 
-target_include_directories(example_plugin_manager PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${mrs_lib_INCLUDE_DIRS}
+ament_target_dependencies(ExamplePluginManager_PluginManager
+  ${DEPENDENCIES}
 )
 
-# each component (nodelet) needs to be registered to make it discoverable at runtime
-rclcpp_components_register_nodes(example_plugin_manager "example_plugin_manager::ExamplePluginManager" EXECUTABLE ExamplePluginManager)
+rclcpp_components_register_nodes(ExamplePluginManager_PluginManager "example_plugin_manager::ExamplePluginManager" EXECUTABLE ExamplePluginManager_PluginManager)
+
+## --------------------------------------------------------------
+## |                           install                          |
+## --------------------------------------------------------------
+
+ament_export_libraries(
+  ${LIBRARIES}
+)
 
 install(
-  DIRECTORY include/
-  DESTINATION include
-)
+  TARGETS ${LIBRARIES}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  )
+
+install(
+  DIRECTORY include
+  DESTINATION .
+  )
 
 install(
   DIRECTORY launch
@@ -59,26 +77,18 @@ install(
 install(
   DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  TARGETS ${LIBRARIES}
-  EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-ament_export_libraries(
-  ${LIBRARIES}
-)
-
-ament_export_targets(
-  export_${PROJECT_NAME} 
-)
+  )
 
 ament_export_include_directories(
   include
+)
+
+ament_export_targets(
+  export_${PROJECT_NAME} HAS_LIBRARY_TARGET
+)
+
+ament_export_dependencies(
+  ${DEPENDENCIES}
 )
 
 ament_package()
