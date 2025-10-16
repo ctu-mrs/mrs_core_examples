@@ -1,15 +1,12 @@
-name: ros_build_test
+name: ros_package_build
 
 on:
 
   push:
-    branches: [ ros2_devel ]
+    branches: [ ros2 ]
 
     paths-ignore:
       - '**/README.md'
-
-  pull_request:
-    branches: [ ros2 ]
 
   workflow_dispatch:
 
@@ -20,6 +17,6 @@ concurrency:
 jobs:
 
   build:
-    uses: ctu-mrs/ci_scripts/.github/workflows/ros_build_test.yml@ros2
+    uses: ctu-mrs/ci_scripts/.github/workflows/rostest.yml@ros2
     secrets:
       PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
