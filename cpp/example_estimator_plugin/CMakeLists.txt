@@ -27,6 +27,7 @@ set(DEPENDENCIES
   pluginlib
   mrs_uav_managers
   mrs_uav_state_estimators
+  mrs_uav_testing
   Eigen3
 )
 
@@ -46,6 +47,7 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS}
   ${mrs_uav_managers_INCLUDE_DIRS}
   ${mrs_uav_state_estimators_INCLUDE_DIRS}
+  ${mrs_uav_testing_INCLUDE_DIRS}
 )
 
 # |------------------------------------------------------|
@@ -69,6 +71,16 @@ target_compile_definitions(ExampleEstimatorPlugin_ExampleEstimator PRIVATE USE_R
 pluginlib_export_plugin_description_file(mrs_uav_managers plugins.xml)
 
 ## --------------------------------------------------------------
+## |                           testing                          |
+## --------------------------------------------------------------
+
+if(ENABLE_TESTS)
+
+  add_subdirectory(test)
+
+endif()
+
+## --------------------------------------------------------------
 ## |                           Install                          |
 ## --------------------------------------------------------------
 
@@ -81,6 +93,11 @@ install(TARGETS ${LIBRARIES}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
+)
+
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_export_targets(
