@@ -10,20 +10,19 @@ from mrs_msgs.srv import Vec1,Vec1_Response
 
 class SweepingGenerator(Node):
 
-    # #{ __init__(self)
-
     def __init__(self):
+
         super().__init__('sweeping_generator')
-        self.declare_parameter('frame_id',"world_origi")
+        self.declare_parameter('frame_id', "world_origin")
 
-        self.declare_parameter("center.x",0.0)
-        self.declare_parameter("center.y",0.0)
-        self.declare_parameter("center.z",3.0)
+        self.declare_parameter("center.x", 0.0)
+        self.declare_parameter("center.y", 0.0)
+        self.declare_parameter("center.z", 3.0)
 
-        self.declare_parameter("dimensions.x",10.0)
-        self.declare_parameter("dimensions.y",10.0)
+        self.declare_parameter("dimensions.x", 10.0)
+        self.declare_parameter("dimensions.y", 10.0)
 
-        self.declare_parameter("timer_main.rate",1.0)
+        self.declare_parameter("timer_main.rate", 1.0)
 
         self.frame_id = self.get_parameter('frame_id').value
 
@@ -35,8 +34,6 @@ class SweepingGenerator(Node):
         self.dimensions_y = self.get_parameter("dimensions.y").value
 
         self.timer_main_rate = self.get_parameter("timer_main.rate").value
-
-        # self.get_logger().info(f"[SweepingGenerator]: value of self.dimensions_x: {self.frame_id} {self.dimensions_x}")
         
         self.sub_control_manager_diag = self.create_subscription(ControlManagerDiagnostics, "~/control_manager_diag_in", self.callback_control_manager_diagnostics, 10)
 
@@ -58,11 +55,8 @@ class SweepingGenerator(Node):
 
         self.get_logger().info('[SweepingGenerator]: initialized')
 
-    # #} end of __init__()
-
     ## | ------------------------- methods ------------------------ |
 
-    # #{ planPath()
     def plan_path(self, step_size):
         self.get_logger().info("[SweepingGenerator]: planning path")
 
@@ -82,7 +76,7 @@ class SweepingGenerator(Node):
                 point = Reference()
                 point.position.x = self.center_x + i
                 point.position.y = self.center_y + j*sign
-                point.position.z = self.center_znow
+                point.position.z = self.center_z
                 point.heading = 0.0
                 self.get_logger().info(f"point_pos_x: {self.center_x + i}, point_pos_y: {self.center_y + j*sign} point_pos_z: {self.center_z}\n")
                 path_msg.path.points.append(point)
@@ -90,23 +84,19 @@ class SweepingGenerator(Node):
             sign *= -1.0
             
         return path_msg
-    
-    # #} end of planPath()
 
     ## | ------------------------ callbacks ----------------------- |
 
-    # #{ callbackControlManagerDiagnostics():
-
     def callback_control_manager_diagnostics(self, msg):
+
         if not self.is_initialized:
             return
+
         self.get_logger().info("[SweepingGenerator]: getting ControlManager diagnostics",once=True)
         self.sub_control_manager_diag = msg
-    
-    # #} end of
 
-    # #{ callbackStart():
     def callback_start(self, request, response):
+
         if not self.is_initialized:
             response.success = False
             response.message = "not initialized"
@@ -131,26 +121,25 @@ class SweepingGenerator(Node):
 
         response.success = True
         response.message = "starting"
-        return response
-    # #} end of callback_start()
 
-    # #{ timer_main_callback()
+        return response
+
     def timer_main_callback(self):
+
         if not self.is_initialized:
             return
         
         self.get_logger().info("[SweepingGenerator]: main timer spinning", once=True)
 
         if isinstance(self.sub_control_manager_diag, ControlManagerDiagnostics):
+
             if self.sub_control_manager_diag.tracker_status.have_goal:
                 self.get_logger().info("[SweepingGenerator]: tracker has goal")
             else:
                 self.get_logger().info("[SweepingGenerator]: waiting for command")
 
-    # # end of timer_main_callback()
-
-
 def main(args=None):
+
     rclpy.init(args=args)
 
     sweeping_gen = SweepingGenerator()
@@ -158,10 +147,7 @@ def main(args=None):
     rclpy.spin(sweeping_gen)
 
     sweeping_gen.destroy_node()
-
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
-

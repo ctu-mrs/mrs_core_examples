@@ -20,43 +20,37 @@ windows:
   - simulator:
       layout: tiled
       panes:
-        - ros2 launch mrs_multirotor_simulator multirotor_simulator.py custom_config:=./config/simulator.yaml
+        - ros2 launch mrs_multirotor_simulator multirotor_simulator.launch.py custom_config:=./config/simulator.yaml
   - hw_api:
       layout: tiled
       panes:
-        - ros2 launch mrs_multirotor_simulator hw_api.py
+        - ros2 launch mrs_multirotor_simulator hw_api.launch.py
   - core:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_core core.py 
-          platform_config:=$PLATFORM_CONFIG 
-          world_config:=./config/world_config.yaml 
-          custom_config:=./config/custom_config.yaml 
+        - ros2 launch mrs_uav_core core.launch.py
+          platform_config:=$PLATFORM_CONFIG
+          world_config:=./config/world_config.yaml
+          custom_config:=./config/custom_config.yaml
           network_config:=./config/network_config.yaml
-
   - status:
       layout: tiled
       panes:
         - ros2 run mrs_uav_status status.sh
-  
   - sweeping_generator:
       layout: tiled
       panes:
         - waitForControl; ros2 launch sweeping_generator sweeping_generator.launch.py
-        - 'history -s ros2 service call /$UAV_NAME/start mrs_msgs/srv/Vec1 "{goal: 3.0}"'
-
-
+        - 'history -s ./call_start_service.sh' 
   - takeoff:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_autostart automatic_start.py custom_config:=./config/automatic_start.yaml
+        - ros2 launch mrs_uav_autostart automatic_start.launch.py custom_config:=./config/automatic_start.yaml
         - waitForCore && ./takeoff.sh
-
   - rviz:
       layout: tiled
       panes:
         - ros2 run rviz2 rviz2 -d ./rviz.rviz
-  
   - layout:
       layout: tiled
       panes:

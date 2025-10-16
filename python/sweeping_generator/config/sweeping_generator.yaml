@@ -1,6 +1,6 @@
-/**: # This handles all namespaces are node names 
+/**:
   ros__parameters:
-  # double underscores is necessory to be mentioned for ros__parameters
+
     frame_id: "world_origin"
 
     timer_main:
