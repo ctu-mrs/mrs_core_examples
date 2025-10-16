@@ -1,0 +1,23 @@
+mrs_uav_managers:
+
+  control_manager:
+
+    ExampleTracker:
+      address: "example_tracker_plugin::ExampleTracker"
+      namespace: "example_tracker"
+      human_switchable: true
+
+    # list of names of dynamically loaded trackers
+    trackers : [
+      "ExampleTracker",
+    ]
+
+  uav_manager:
+
+    takeoff:
+      after_takeoff:
+        tracker: "ExampleTracker"
+
+    midair_activation:
+      after_activation:
+        tracker: "ExampleTracker"
