@@ -38,12 +38,11 @@ windows:
         - ros2 run mrs_uav_status status.sh
   - example_waypoint_flier:
       layout: tiled
-      root: ~/ws_mrs/
       panes:
-        - 'waitForTakeoff && ros2 launch example_waypoint_flier example_waypoint_flier.launch.py'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/start_waypoints_following_in std_srvs/srv/Trigger {}'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/fly_to_first_waypoint_in std_srvs/srv/Trigger {}'
-        - 'waitForTakeoff && history -s ros2 service call $UAV_NAME/stop_waypoints_following_in std_srvs/srv/Trigger {}'
+        - ros2 launch example_waypoint_flier example_waypoint_flier.launch.py
+        - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/start_waypoints_following std_srvs/srv/Trigger {}'
+        - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint std_srvs/srv/Trigger {}'
+        - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/stop_waypoints_following std_srvs/srv/Trigger {}'
   - takeoff:
       layout: tiled
       panes:
@@ -57,3 +56,7 @@ windows:
       layout: tiled
       panes:
         - ros2 run rqt_reconfigure rqt_reconfigure
+  - layout:
+      layout: tiled
+      panes:
+        - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json

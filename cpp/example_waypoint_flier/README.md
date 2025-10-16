@@ -24,7 +24,7 @@ Then, call the services prepared in the terminal window either by:
 
 Or typing the following command into a terminal connected to the ROS server:
 ```
-rosservice call /uav1/waypoint_flier_simple/start
+ros2 service call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint std_srvs/srv/Trigger {}
 
 For navigating between terminals use `shift + arrow keys` and for navigating between panes of terminal use `ctrl + k' to move horizontally between panes and 'ctrl + l` to move vertically.
 ```
@@ -66,11 +66,11 @@ Also check out our general [C++ good/bad coding practices tutorial](https://ctu-
   - `position_x_` -  member variable
 * Also, we distinguish parameters which are loaded as parameters by underscore at the beginning
 * Descriptive variable names are used. The purpose of the variable should be obvious from the name.
-  - `sub_odom_uav_` - member subscriber to uav odometry msg type
-  - `pub_reference_` - member publisher of reference msg type
+  - `sh_odometry_` - member subscriber handler to uav odometry msg type
+  - `pub_reference_` - member publisher hanadler of reference msg type
   - `srv_server_start_waypoints_following_` - member service server for starting following of waypoints
-  - `ExampleWaypointFlier::callbackTimerCheckSubscribers()` - callback of timer which checks subscribers
-  - `mutex_odom_uav_` - mutex locking access to variable containing odometry of the UAV
+  - `ExampleWaypointFlier::timerCheckSubscribers()` - callback of timer which checks subscribers
+  - `mutex_current_waypoint_` - mutex locking access to variable containing current UAV waypoint
 
 ### Good practices
 
@@ -78,16 +78,8 @@ Also check out our general [C++ good/bad coding practices tutorial](https://ctu-
 * Do not use raw pointers! Smart pointers from `<memory>` free resources automatically, thus preventing memory leaks.
 * Lock access to member variables! Nodelets are multi-thread processes, so it is our responsibility to make our code thread-safe.
   - Use `c++17` `scoped_lock` which unlocks the mutex after leaving the scope. This way, you can't forget to unlock the mutex.
-  ```cpp
-  {
-    std::scoped_lock lock(mutex_odom_uav_);
-    odom_uav_ = *msg;
-  }
-  ```
-
-
 * When a component is initialized, the method `intialize()` is called. In the method, the subscribers are initialized, and callbacks are bound to them. The callbacks can run even before the `intialize()` method ends, which can lead to some variables being still not initialized, parameters not loaded, etc. This can be prevented by using an `is_initialized_`, initializing it to `false` at the beginning of `intialize()` and setting it to true at the end. Every callback should check this variable and continue only when it is `true`.
 * Use `mrs_lib::ParamLoader` class to load parameters from launch files and config files. This class checks whether the parameter was actually loaded, which can save a lot of debugging. Furthermore, loading matrices into config files becomes much simpler.
-* For printing debug info to terminal use `RCLCPP_INFO()`, `RCLCPP_WARN()`, `RCLCPP_ERROR()` macros. Do not spam the terminal by printing a variable every time a callback is called, use for example `RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock_, 1.0, "dog")` to print *dog* not more often than every second. Other animals can also be used for debugging purposes.
-* If you need to execute a piece of code periodically, do not use sleep in a loop, or anything similar. The ROS API provides `rclcpp::TimerBase` class for this purposes, which executes a callback every time the timer expires.
+* For printing debug info to terminal use `RCLCPP_INFO()`, `RCLCPP_WARN()`, `RCLCPP_ERROR()` macros. Do not spam the terminal by printing a variable every time a callback is called, use for example `RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock_, 1000, "dog")` to print *dog* not more often than every second. Other animals can also be used for debugging purposes.
+* If you need to execute a piece of code periodically, do not use sleep in a loop, or anything similar. The ROS API provides `mrs_lib::TheadTimer` (or native but greedy `mrs_lib::ROSTimer`) class for this purposes, which executes a callback every time the timer expires.
 * Always check whether all subscribed messages are coming. If not, print a warning. Then you know the problem is not in your nodelet and you know to look for the problem in topic remapping or the node publishing it.

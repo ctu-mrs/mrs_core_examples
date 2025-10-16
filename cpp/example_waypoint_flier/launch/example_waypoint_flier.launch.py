@@ -55,6 +55,18 @@ def generate_launch_description():
     standalone = LaunchConfiguration('standalone')
     # #}
 
+    # #{ use_sim_time
+
+    use_sim_time = LaunchConfiguration('use_sim_time')
+
+    ld.add_action(DeclareLaunchArgument(
+        'use_sim_time',
+        default_value=os.getenv('USE_SIM_TIME', "false"),
+        description="Should the node subscribe to sim time?",
+    ))
+
+    # #} end of custom_config
+
     # #{ waypoint flier node
 
     waypoint_flier_node = ComposableNode(
@@ -62,13 +74,11 @@ def generate_launch_description():
             package=pkg_name,
             plugin='example_waypoint_flier::WaypointFlier',
             namespace=uav_name,
-            name='example_waypoint_flier',
+            name='waypoint_flier',
             parameters=[
                 {"uav_name": uav_name},
-                {"topic_prefix": "/" + uav_name},
-                {"enable_profiler": False},
-                {"config": this_pkg_path+'/config/example_waypoint_flier.yaml'},
-                # {"use_sim_time": use_sim_time},
+                {"use_sim_time": use_sim_time},
+                {"config": this_pkg_path+'/config/waypoint_flier.yaml'},
 
             ],
             remappings=[
@@ -104,6 +114,8 @@ def generate_launch_description():
 
     # #} end of container_name
 
+    # #{ load into container
+
     load_into_existing = LoadComposableNodes(
         target_container= container_name,
         composable_node_descriptions = [waypoint_flier_node],
@@ -111,6 +123,8 @@ def generate_launch_description():
     )
 
     ld.add_action(load_into_existing)
+
+    # #} end of load into container
 
     # #{ standalone container
 

@@ -36,6 +36,7 @@
 #include <mrs_lib/service_client_handler.h>
 #include <mrs_lib/dynparam_mgr.h>
 #include <mrs_lib/node.h>
+#include <mrs_lib/service_server_handler.h>
 
 /* for calling simple ros services */
 #include <std_srvs/srv/trigger.hpp>
@@ -63,6 +64,12 @@ namespace example_waypoint_flier
 
 /* class WaypointFlier //{ */
 
+struct DynParams_t
+{
+  double waypoint_idle_time;
+  double rate_publish_dist;
+};
+
 class WaypointFlier : public mrs_lib::Node {
 public:
   WaypointFlier(rclcpp::NodeOptions options);
@@ -72,6 +79,11 @@ public:
 private:
   rclcpp::Node::SharedPtr  node_;
   rclcpp::Clock::SharedPtr clock_;
+
+  rclcpp::CallbackGroup::SharedPtr cbkgrp_subs_;
+  rclcpp::CallbackGroup::SharedPtr cbkgrp_sc_;
+  rclcpp::CallbackGroup::SharedPtr cbkgrp_ss_;
+  rclcpp::CallbackGroup::SharedPtr cbkgrp_timers_;
 
   std::string _uav_name_;
   bool        is_initialized_ = false;
@@ -90,27 +102,26 @@ private:
   void                                                     timerPublishDistToWaypoint();
   mrs_lib::PublisherHandler<mrs_msgs::msg::Float64Stamped> pub_dist_to_waypoint_;
   std::shared_ptr<TimerType>                               timer_publish_dist_to_waypoint_;
-  int                                                      _rate_timer_publish_dist_to_waypoint_;
 
   void                                                       timerPublishSetReference();
   mrs_lib::PublisherHandler<mrs_msgs::msg::ReferenceStamped> pub_reference_;
   std::shared_ptr<TimerType>                                 timer_publisher_reference_;
-  int                                                        _rate_timer_publisher_reference_;
+  double                                                     _rate_timer_publisher_reference_;
 
   void                       timerCheckSubscribers();
   std::shared_ptr<TimerType> timer_check_subscribers_;
-  int                        _rate_timer_check_subscribers_;
+  double                     _rate_timer_check_subscribers_;
 
   // | ----------------- sevice server callbacks ---------------- |
 
   bool callbackStartWaypointFollowing(const std::shared_ptr<std_srvs::srv::Trigger::Request> req, const std::shared_ptr<std_srvs::srv::Trigger::Response> res);
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_server_start_waypoints_following_;
+  mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger> srv_server_start_waypoints_following_;
 
   bool callbackStopWaypointFollowing(const std::shared_ptr<std_srvs::srv::Trigger::Request> req, const std::shared_ptr<std_srvs::srv::Trigger::Response> res);
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_server_stop_waypoints_following_;
+  mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger> srv_server_stop_waypoints_following_;
 
   bool callbackFlyToFirstWaypoint(const std::shared_ptr<std_srvs::srv::Trigger::Request> req, const std::shared_ptr<std_srvs::srv::Trigger::Response> res);
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_server_fly_to_first_waypoint_;
+  mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger> srv_server_fly_to_first_waypoint_;
 
   // | --------------------- service clients -------------------- |
 
@@ -134,16 +145,15 @@ private:
   // | ------------------- dynamic reconfigure ------------------ |
 
   std::shared_ptr<mrs_lib::DynparamMgr> dynparam_mgr_;
-  std::mutex                            mutex_dynamic_reconfigure_;
+  std::mutex                            mutex_drs_params_;
+  DynParams_t                           drs_params_;
 
-  template <typename T>
-  void callbackDynamicReconfigure(const std::string& param_name, const T& value);
+  void callbackRatePublishDist(const double param_value);
 
   // | --------------------- waypoint idling -------------------- |
 
   bool                       is_idling_ = false;
   std::shared_ptr<TimerType> timer_idling_;
-  int                        _waypoint_idle_time_;
   double                     _waypoint_desired_dist_;
   void                       timerIdling();
 
@@ -173,56 +183,64 @@ void WaypointFlier::intialize() {
   node_  = this->this_node_ptr();
   clock_ = node_->get_clock();
 
+  cbkgrp_subs_   = this_node().create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+  cbkgrp_sc_     = this_node().create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+  cbkgrp_ss_     = this_node().create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+  cbkgrp_timers_ = this_node().create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+
   mrs_lib::ParamLoader param_loader(node_);
 
-  dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_dynamic_reconfigure_);
+  dynparam_mgr_ = std::make_shared<mrs_lib::DynparamMgr>(node_, mutex_drs_params_);
 
   param_loader.addYamlFileFromParam("config");
 
+  // Dynparam_mgr has its own param loader.
+  // This will replicate the params from our main param loader into the dynparam_mgr, so
+  // that dynparam_
   dynparam_mgr_->get_param_provider().copyYamls(param_loader.getParamProvider());
 
-  const mrs_lib::DynparamMgr::update_cbk_t<int> cbk =
-      std::bind(&WaypointFlier::callbackDynamicReconfigure<int>, this, "waypoint_idle_time", std::placeholders::_1);
-
-  const auto result = dynparam_mgr_->register_param("waypoint_idle_time", &_waypoint_idle_time_, cbk);
-  std::cout << "Dynamic param loaded : " << result << std::endl;
+  dynparam_mgr_->register_param("waypoint_idle_time", &drs_params_.waypoint_idle_time, mrs_lib::DynparamMgr::range_t<double>(0.0, 5.0));
+  dynparam_mgr_->register_param("rate/publish_dist_to_waypoint", &drs_params_.rate_publish_dist, mrs_lib::DynparamMgr::range_t<double>(1.0, 100.0),
+                                (std::function<void(const double&)>)std::bind(&WaypointFlier::callbackRatePublishDist, this, std::placeholders::_1));
 
   param_loader.loadParam("uav_name", _uav_name_);
   param_loader.loadParam("n_loops", _n_loops_);
   param_loader.loadParam("waypoint_desired_distance", _waypoint_desired_dist_);
-  // param_loader.loadParam("waypoint_idle_time", _waypoint_idle_time_);
   param_loader.loadParam("waypoints_frame", _waypoints_frame_);
-  param_loader.loadParam("rate/publish_dist_to_waypoint", _rate_timer_publish_dist_to_waypoint_);
   param_loader.loadParam("rate/publish_reference", _rate_timer_publisher_reference_);
   param_loader.loadParam("rate/check_subscribers", _rate_timer_check_subscribers_);
 
   /* load waypoints as a half-dynamic matrix from config file */
   Eigen::MatrixXd waypoint_matrix;
+
   param_loader.loadMatrixDynamic("waypoints", waypoint_matrix, -1, 4);  // -1 indicates the dynamic dimension
+
   waypoints_            = matrixToPoints(waypoint_matrix);
   n_waypoints_          = waypoints_.size();
   waypoints_loaded_     = true;
   idx_current_waypoint_ = 0;
   c_loop_               = 0;
+
   RCLCPP_INFO_STREAM_ONCE(node_->get_logger(), "" << n_waypoints_ << " waypoints loaded");
   RCLCPP_INFO_STREAM_ONCE(node_->get_logger(), "" << _n_loops_ << " loops requested");
 
   /* load offsets of all waypoints as statics matrix from the config file and adjust waypoints accordingly.*/
   param_loader.loadMatrixKnown("offset", _offset_, 1, 4);
 
-  if (!param_loader.loadedSuccessfully()) {
+  if (!param_loader.loadedSuccessfully() || !dynparam_mgr_->loaded_successfully()) {
     RCLCPP_ERROR(node_->get_logger(), "failed to load non-optional parameters!");
     rclcpp::shutdown();
+    exit(1);
   }
 
   // | ----------------------- subscribers ---------------------- |
 
   mrs_lib::SubscriberHandlerOptions shopts;
-  shopts.node               = node_;
-  shopts.node_name          = "WaypointFlier";
-  shopts.no_message_timeout = rclcpp::Duration(1, 0);
-  shopts.threadsafe         = true;
-  shopts.autostart          = true;
+  shopts.node                                = node_;
+  shopts.node_name                           = "WaypointFlier";
+  shopts.threadsafe                          = true;
+  shopts.autostart                           = true;
+  shopts.subscription_options.callback_group = cbkgrp_subs_;
 
   sh_odometry_             = mrs_lib::SubscriberHandler<nav_msgs::msg::Odometry>(shopts, "~/odom_in");
   sh_control_manager_diag_ = mrs_lib::SubscriberHandler<mrs_msgs::msg::ControlManagerDiagnostics>(shopts, "~/control_manager_diagnostics_in",
@@ -236,11 +254,13 @@ void WaypointFlier::intialize() {
 
   mrs_lib::TimerHandlerOptions opts_autostart;
 
-  opts_autostart.node      = node_;
-  opts_autostart.autostart = true;
+  opts_autostart.node           = node_;
+  opts_autostart.autostart      = true;
+  opts_autostart.callback_group = cbkgrp_timers_;
+
   {
     std::function<void()> callback_fn = std::bind(&WaypointFlier::timerPublishDistToWaypoint, this);
-    timer_publish_dist_to_waypoint_   = std::make_shared<TimerType>(opts_autostart, rclcpp::Rate(_rate_timer_publish_dist_to_waypoint_, clock_), callback_fn);
+    timer_publish_dist_to_waypoint_   = std::make_shared<TimerType>(opts_autostart, rclcpp::Rate(drs_params_.rate_publish_dist, clock_), callback_fn);
   }
 
   {
@@ -249,8 +269,10 @@ void WaypointFlier::intialize() {
   }
 
   mrs_lib::TimerHandlerOptions opts_no_autostart;
-  opts_no_autostart.node      = node_;
-  opts_no_autostart.autostart = false;
+
+  opts_no_autostart.node           = node_;
+  opts_no_autostart.autostart      = false;
+  opts_no_autostart.callback_group = cbkgrp_timers_;
 
   {
     std::function<void()> callback_fn = std::bind(&WaypointFlier::timerPublishSetReference, this);
@@ -259,22 +281,21 @@ void WaypointFlier::intialize() {
 
   // | --------------------- service servers -------------------- |
 
-  srv_server_start_waypoints_following_ = node_->create_service<std_srvs::srv::Trigger>(
-      "start_waypoints_following_in", std::bind(&WaypointFlier::callbackStartWaypointFollowing, this, std::placeholders::_1, std::placeholders::_2),
-      rclcpp::SystemDefaultsQoS());
+  srv_server_start_waypoints_following_ = mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger>(
+      node_, "~/start_waypoints_following_in", std::bind(&WaypointFlier::callbackStartWaypointFollowing, this, std::placeholders::_1, std::placeholders::_2),
+      rclcpp::SystemDefaultsQoS(), cbkgrp_ss_);
 
-  srv_server_stop_waypoints_following_ = node_->create_service<std_srvs::srv::Trigger>(
-      "stop_waypoints_following_in", std::bind(&WaypointFlier::callbackStopWaypointFollowing, this, std::placeholders::_1, std::placeholders::_2),
-      rclcpp::SystemDefaultsQoS());
+  srv_server_stop_waypoints_following_ = mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger>(
+      node_, "~/stop_waypoints_following_in", std::bind(&WaypointFlier::callbackStopWaypointFollowing, this, std::placeholders::_1, std::placeholders::_2),
+      rclcpp::SystemDefaultsQoS(), cbkgrp_ss_);
 
-  srv_server_fly_to_first_waypoint_ = node_->create_service<std_srvs::srv::Trigger>(
-      "fly_to_first_waypoint_in", std::bind(&WaypointFlier::callbackFlyToFirstWaypoint, this, std::placeholders::_1, std::placeholders::_2),
-      rclcpp::SystemDefaultsQoS());
-
+  srv_server_fly_to_first_waypoint_ = mrs_lib::ServiceServerHandler<std_srvs::srv::Trigger>(
+      node_, "~/fly_to_first_waypoint_in", std::bind(&WaypointFlier::callbackFlyToFirstWaypoint, this, std::placeholders::_1, std::placeholders::_2),
+      rclcpp::SystemDefaultsQoS(), cbkgrp_ss_);
 
   // | --------------------- service clients -------------------- |
 
-  srv_client_land_ = mrs_lib::ServiceClientHandler<std_srvs::srv::Trigger>(node_, "land_out");
+  srv_client_land_ = mrs_lib::ServiceClientHandler<std_srvs::srv::Trigger>(node_, "~/land_out", cbkgrp_sc_);
 
   // | --------------------- finish the init -------------------- |
 
@@ -294,7 +315,12 @@ void WaypointFlier::callbackControlManagerDiag(const mrs_msgs::msg::ControlManag
     return;
   }
 
-  RCLCPP_INFO_ONCE(node_->get_logger(), "Received first control manager diagnostics msg");
+  // this routine can not work without the odometry
+  if (!sh_odometry_.hasMsg()) {
+    return;
+  }
+
+  RCLCPP_INFO_ONCE(node_->get_logger(), "received first control manager diagnostics msg");
 
   // get the variable under the mutex
   mrs_msgs::msg::Reference current_waypoint = mrs_lib::get_mutexed(mutex_current_waypoint_, current_waypoint_);
@@ -303,32 +329,34 @@ void WaypointFlier::callbackControlManagerDiag(const mrs_msgs::msg::ControlManag
   geometry_msgs::msg::Pose current_pose = mrs_lib::getPose(sh_odometry_.getMsg());
 
   double dist = distance(current_waypoint, current_pose);
-  // RCLCPP_INFO(node_->get_logger(),"Distance to waypoint: %.2f", dist);
 
   if (have_goal_ && !diagnostics->tracker_status.have_goal) {
+
     have_goal_ = false;
 
     if (dist < _waypoint_desired_dist_) {
+
       waypoint_reached_ = true;
-      RCLCPP_INFO(node_->get_logger(), "Waypoint reached.");
+      RCLCPP_INFO(node_->get_logger(), "waypoint reached");
+
+      auto drs_params = mrs_lib::get_mutexed(mutex_drs_params_, drs_params_);
 
       /* start idling at the reached waypoint */
-
       {
         mrs_lib::TimerHandlerOptions timer_opts_start;
         timer_opts_start.node      = node_;
         timer_opts_start.autostart = true;
-        // makes the timer run only once
-        timer_opts_start.oneshot           = true;
-        is_idling_                         = true;
-        std::function<void()> callback_fcn = std::bind(&WaypointFlier::timerIdling, this);
-        // auto& param_provider_ = dynam_mgr.get_param_provider();
-        // const auto result = param_provider_.getParam("waypoint_idle_time", _waypoint_idle_time_);
 
-        timer_idling_ = std::make_shared<TimerType>(timer_opts_start, rclcpp::Rate(rclcpp::Duration(1, 0), clock_), callback_fcn);
+        // makes the timer run only once
+        timer_opts_start.oneshot = true;
+        is_idling_               = true;
+
+        std::function<void()> callback_fcn = std::bind(&WaypointFlier::timerIdling, this);
+
+        timer_idling_ = std::make_shared<TimerType>(timer_opts_start, rclcpp::Rate(1.0 / drs_params.waypoint_idle_time), callback_fcn);
       }
 
-      RCLCPP_INFO(node_->get_logger(), "Idling for %d seconds.", _waypoint_idle_time_);
+      RCLCPP_INFO(node_->get_logger(), "Idling for %f seconds.", drs_params.waypoint_idle_time);
     }
   }
 }
@@ -360,27 +388,36 @@ void WaypointFlier::timerPublishSetReference() {
 
     c_loop_++;
 
-    RCLCPP_INFO(node_->get_logger(), "Finished loop %d/%d", c_loop_, _n_loops_);
+    RCLCPP_INFO(node_->get_logger(), "finished loop %d/%d", c_loop_, _n_loops_);
 
     if (c_loop_ >= _n_loops_) {
 
-      RCLCPP_INFO(node_->get_logger(), "Finished %d loops of %d waypoints.", _n_loops_, n_waypoints_);
+      RCLCPP_INFO(node_->get_logger(), "finished %d loops of %d waypoints.", _n_loops_, n_waypoints_);
 
       if (_land_end_) {
 
-        RCLCPP_INFO(node_->get_logger(), "Calling land service.");
+        RCLCPP_INFO(node_->get_logger(), "calling land service.");
 
         std::shared_ptr<std_srvs::srv::Trigger::Request> req = std::make_shared<std_srvs::srv::Trigger::Request>();
 
         auto res = srv_client_land_.callSync(req);
+
+        if (!res) {
+          RCLCPP_ERROR(node_->get_logger(), "failed to call eland service");
+        } else {
+          if (!res.value()->success) {
+            RCLCPP_ERROR(node_->get_logger(), "service call for eland failed, response: '%s'", res.value()->message.c_str());
+          }
+        }
       }
 
-      RCLCPP_INFO(node_->get_logger(), "Shutting down.");
+      RCLCPP_INFO(node_->get_logger(), "shutting down.");
       rclcpp::shutdown();
+      exit(1);
       return;
 
     } else {
-      RCLCPP_INFO(node_->get_logger(), "Starting loop %d/%d", c_loop_ + 1, _n_loops_);
+      RCLCPP_INFO(node_->get_logger(), "starting loop %d/%d", c_loop_ + 1, _n_loops_);
       idx_current_waypoint_ = 0;
     }
   }
@@ -400,12 +437,7 @@ void WaypointFlier::timerPublishSetReference() {
   RCLCPP_INFO(node_->get_logger(), "Flying to waypoint %d: x: %.2f y: %.2f z: %.2f heading: %.2f", idx_current_waypoint_ + 1, new_waypoint.reference.position.x,
               new_waypoint.reference.position.y, new_waypoint.reference.position.z, new_waypoint.reference.heading);
 
-  try {
-    pub_reference_.publish(new_waypoint);
-  }
-  catch (...) {
-    RCLCPP_ERROR(node_->get_logger(), "Exception caught during publishing set reference");
-  }
+  pub_reference_.publish(new_waypoint);
 
   if (waypoint_reached_) {
     idx_current_waypoint_++;
@@ -442,7 +474,7 @@ void WaypointFlier::timerPublishDistToWaypoint() {
   geometry_msgs::msg::Pose current_pose = mrs_lib::getPose(sh_odometry_.getMsg());
 
   double dist = distance(current_waypoint, current_pose);
-  RCLCPP_INFO(node_->get_logger(), "Distance to waypoint is given as ::: %.2f", dist);
+  RCLCPP_INFO(node_->get_logger(), "distance to waypoint is given is %.2f m", dist);
 
   mrs_msgs::msg::Float64Stamped dist_msg;
 
@@ -451,12 +483,7 @@ void WaypointFlier::timerPublishDistToWaypoint() {
   dist_msg.header.stamp    = clock_->now();
   dist_msg.value           = dist;
 
-  try {
-    pub_dist_to_waypoint_.publish(dist_msg);
-  }
-  catch (...) {
-    RCLCPP_ERROR(node_->get_logger(), "Exception caught during publishing dist to waypoint");
-  }
+  pub_dist_to_waypoint_.publish(dist_msg);
 }
 
 //}
@@ -484,10 +511,9 @@ void WaypointFlier::timerCheckSubscribers() {
 
 void WaypointFlier::timerIdling() {
 
-  auto waypoint_idle_time = mrs_lib::get_mutexed(mutex_dynamic_reconfigure_, _waypoint_idle_time_);
+  auto drs_params = mrs_lib::get_mutexed(mutex_drs_params_, drs_params_);
 
-  std::chrono::seconds duration_seconds(waypoint_idle_time);
-  rclcpp::sleep_for(std::chrono::duration(duration_seconds));
+  clock_->sleep_for(std::chrono::duration<double>(drs_params.waypoint_idle_time));
 
   RCLCPP_INFO(node_->get_logger(), "Idling finished");
   is_idling_ = false;
@@ -500,7 +526,7 @@ void WaypointFlier::timerIdling() {
 /* callbackStartWaypointFollowing() //{ */
 
 bool WaypointFlier::callbackStartWaypointFollowing([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
-                                                          const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
+                                                   const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
 
   if (!is_initialized_) {
 
@@ -534,7 +560,7 @@ bool WaypointFlier::callbackStartWaypointFollowing([[maybe_unused]] const std::s
 /* callbackStopWaypointFollowing() //{ */
 
 bool WaypointFlier::callbackStopWaypointFollowing([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
-                                                         const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
+                                                  const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
 
   if (!is_initialized_) {
 
@@ -559,7 +585,7 @@ bool WaypointFlier::callbackStopWaypointFollowing([[maybe_unused]] const std::sh
 /* callbackFlyToFirstWaypoint() //{ */
 
 bool WaypointFlier::callbackFlyToFirstWaypoint([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
-                                                      const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
+                                               const std::shared_ptr<std_srvs::srv::Trigger::Response>                 response) {
 
   if (!is_initialized_) {
 
@@ -618,26 +644,15 @@ bool WaypointFlier::callbackFlyToFirstWaypoint([[maybe_unused]] const std::share
 
 //}
 
-// | ------------------- dynamic callbacks --------------------|
+// | ------------------- dynparam callbacks ------------------- |
 
-/* callbackDynamicReconfigure() //{ */
+/* callbackRatePublishDist() //{ */
 
-template <typename T>
-void WaypointFlier::callbackDynamicReconfigure([[maybe_unused]] const std::string& param_name, const T& value) {
+void WaypointFlier::callbackRatePublishDist(const double param_value) {
 
-  if (!is_initialized_)
-    return;
+  timer_publish_dist_to_waypoint_->setPeriod(rclcpp::Duration(std::chrono::duration<double>(1.0 / param_value)));
 
-  RCLCPP_INFO(node_->get_logger(),
-              "[WaypointFlier]:"
-              "Reconfigure Request: "
-              "Waypoint idle time: %d",
-              value);
-
-  {
-    std::scoped_lock lock(mutex_waypoint_idle_time_);
-    _waypoint_idle_time_ = value;
-  }
+  RCLCPP_INFO(node_->get_logger(), "desired publisher rate updated to %.3f", param_value);
 }
 
 //}

@@ -1,8 +1,8 @@
 # rates of timers in Hz
 rate:
-  publish_dist_to_waypoint: 1 # [Hz]
-  publish_reference: 10 # [Hz]
-  check_subscribers: 1 # [Hz]
+  publish_dist_to_waypoint: 1.0 # [Hz]
+  publish_reference: 10.0       # [Hz]
+  check_subscribers: 1.0        # [Hz]
 
 # number of times the waypoint sequence should be repeated
 n_loops: 3 # [-]
@@ -11,21 +11,23 @@ n_loops: 3 # [-]
 land_at_the_end: false
 
 # how long should the UAV idle at a waypoint?
-waypoint_idle_time: 2
+waypoint_idle_time: 2.0 # [s]
 
 # how close should the uav get to the waypoint before considering it reached?
-waypoint_desired_distance: 0.3
+waypoint_desired_distance: 0.3 # [m]
 
 # matrix of waypoints which will be flown through by the UAV
 # x [m], y [m], z [m], heading [rad]
-waypoints: [-10, -10, 3, 0,
-            10, -10, 3, 1.57,
-            10, 10, 3, 3.14,
-            -10, 10, 3, 4.61]
+waypoints: [
+  -10, -10, 3, 0,
+  10, -10, 3, 1.57,
+  10, 10, 3, 3.14,
+  -10, 10, 3, 4.61,
+]
 
 # in which frame of reference are the points specified?
 waypoints_frame: "world_origin"
 
 # offset will be added to all waypoints
 # x [m], y [m], z [m], yaw [rad]
-offset: [0.0, 0, 0, 0]
+offset: [0.0, 0.0, 0.0, 0.0]
