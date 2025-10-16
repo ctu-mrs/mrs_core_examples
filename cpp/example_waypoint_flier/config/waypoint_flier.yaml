@@ -5,13 +5,13 @@ rate:
   check_subscribers: 1.0        # [Hz]
 
 # number of times the waypoint sequence should be repeated
-n_loops: 3 # [-]
+n_loops: 2 # [-]
 
 # should the UAV land after flying through all the waypoints?
 land_at_the_end: false
 
 # how long should the UAV idle at a waypoint?
-waypoint_idle_time: 2.0 # [s]
+waypoint_idle_time: 0.5 # [s]
 
 # how close should the uav get to the waypoint before considering it reached?
 waypoint_desired_distance: 0.3 # [m]
@@ -22,7 +22,6 @@ waypoints: [
   -10, -10, 3, 0,
   10, -10, 3, 1.57,
   10, 10, 3, 3.14,
-  -10, 10, 3, 4.61,
 ]
 
 # in which frame of reference are the points specified?

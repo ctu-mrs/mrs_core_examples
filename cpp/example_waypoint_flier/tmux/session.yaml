@@ -39,7 +39,7 @@ windows:
   - example_waypoint_flier:
       layout: tiled
       panes:
-        - ros2 launch example_waypoint_flier example_waypoint_flier.launch.py
+        - ros2 launch example_waypoint_flier waypoint_flier.launch.py
         - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/start_waypoints_following std_srvs/srv/Trigger {}'
         - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/fly_to_first_waypoint std_srvs/srv/Trigger {}'
         - 'history -s ros2 service call /$UAV_NAME/waypoint_flier/stop_waypoints_following std_srvs/srv/Trigger {}'

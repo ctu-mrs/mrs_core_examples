@@ -29,6 +29,7 @@ SET(DEPENDENCIES
   mrs_lib
   std_srvs
   Eigen3
+  mrs_uav_testing
 )
 
 foreach(DEP IN LISTS DEPENDENCIES)
@@ -42,6 +43,7 @@ set(LIBRARIES
 include_directories(
   ${rclcpp_INCLUDE_DIRS}
   ${mrs_lib_INCLUDE_DIRS}
+  ${mrs_uav_testing_INCLUDE_DIRS}
 )
 
 ## --------------------------------------------------------------
@@ -57,6 +59,16 @@ ament_target_dependencies(ExampleWaypointFlier_WaypointFlier
 )
 
 rclcpp_components_register_nodes(ExampleWaypointFlier_WaypointFlier PLUGIN "example_waypoint_flier::WaypointFlier" EXECUTABLE ExampleWaypointFlier_WaypointFlier)
+
+## --------------------------------------------------------------
+## |                           testing                          |
+## --------------------------------------------------------------
+
+if(ENABLE_TESTS)
+
+  add_subdirectory(test)
+
+endif()
 
 ## --------------------------------------------------------------
 ## |                           install                          |
