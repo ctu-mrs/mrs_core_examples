@@ -18,6 +18,7 @@ set(DEPENDENCIES
   pluginlib
   mrs_lib
   example_plugin_manager
+  mrs_uav_testing
 )
 
 foreach(DEP IN LISTS DEPENDENCIES)
@@ -35,6 +36,7 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS}
   ${mrs_lib_INCLUDE_DIRS}
   ${example_plugin_manager_INCLUDE_DIRS}
+  ${mrs_uav_testing_INCLUDE_DIRS}
   )
 
 ## --------------------------------------------------------------
@@ -54,6 +56,16 @@ ament_target_dependencies(ExamplePlugins_ExamplePlugin
 ## --------------------------------------------------------------
 
 pluginlib_export_plugin_description_file(example_plugin_manager plugins.xml)
+
+## --------------------------------------------------------------
+## |                           testing                          |
+## --------------------------------------------------------------
+
+if(ENABLE_TESTS)
+
+  add_subdirectory(test)
+
+endif()
 
 ## --------------------------------------------------------------
 ## |                           install                          |
