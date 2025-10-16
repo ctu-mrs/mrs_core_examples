@@ -40,7 +40,7 @@ windows:
   - sweeping_generator:
       layout: tiled
       panes:
-        - waitForControl; ros2 launch sweeping_generator sweeping_generator.launch.py
+        - waitForControl; ros2 launch example_sweeping_generator sweeping_generator.launch.py
         - 'history -s ./call_start_service.sh' 
   - takeoff:
       layout: tiled

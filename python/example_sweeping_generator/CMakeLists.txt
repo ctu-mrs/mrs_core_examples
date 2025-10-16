@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(sweeping_generator)
+project(example_sweeping_generator)
 
 set(DEPENDENCIES
   ament_cmake

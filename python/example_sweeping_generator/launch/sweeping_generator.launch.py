@@ -17,7 +17,7 @@ def generate_launch_description():
 
     ld = launch.LaunchDescription()
 
-    pkg_name = "sweeping_generator"
+    pkg_name = "example_sweeping_generator"
 
     this_pkg_path = get_package_share_directory(pkg_name)
 
@@ -41,7 +41,7 @@ def generate_launch_description():
         name='sweeeping_generator',
         executable='sweeping_generator.py',
         parameters=[
-            get_package_share_directory('sweeping_generator') + 'config/sweeping_generator.yaml',
+            get_package_share_directory('example_sweeping_generator') + 'config/sweeping_generator.yaml',
         ],
         remappings=[
             # subscribers

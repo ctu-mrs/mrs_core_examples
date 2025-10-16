@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'sweeping_generator'
+package_name = 'example_sweeping_generator'
 
 setup(
     name=package_name,
@@ -18,7 +18,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'sweeping_generator = sweeping_generator.sweeping_generator:main',
+            'sweeping_generator = example_sweeping_generator.sweeping_generator:main',
         ],
     },
 )
