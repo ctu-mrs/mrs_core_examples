@@ -28,6 +28,7 @@ set(DEPENDENCIES
   mrs_msgs
   pluginlib
   mrs_uav_managers
+  mrs_uav_testing
   Eigen3
 )
 
@@ -47,6 +48,7 @@ include_directories(
   ${mrs_lib_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS}
   ${mrs_uav_managers_INCLUDE_DIRS}
+  ${mrs_uav_testing_INCLUDE_DIRS}
 )
 
 ## --------------------------------------------------------------
@@ -62,6 +64,16 @@ ament_target_dependencies(ExampleControllerPlugin_ExampleController
 )
 
 target_compile_definitions(ExampleControllerPlugin_ExampleController PRIVATE USE_ROS_TIMER=${USE_ROS_TIMER})
+
+## --------------------------------------------------------------
+## |                           testing                          |
+## --------------------------------------------------------------
+
+if(ENABLE_TESTS)
+
+  add_subdirectory(test)
+
+endif()
 
 ## --------------------------------------------------------------
 ## |                       export plugins                       |

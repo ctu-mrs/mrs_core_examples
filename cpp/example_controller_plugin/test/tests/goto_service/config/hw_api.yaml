@@ -1,0 +1,5 @@
+plugin:
+
+  input_mode:
+
+    acceleration_hdg_rate: true
