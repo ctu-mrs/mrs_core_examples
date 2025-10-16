@@ -2,7 +2,6 @@
 
 import launch
 import os
-import sys
 
 from launch_ros.actions import ComposableNodeContainer , LoadComposableNodes
 from launch_ros.descriptions import ComposableNode
@@ -10,7 +9,6 @@ from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
         LaunchConfiguration,
-        EnvironmentVariable,
         )
 
 # Good source to understand translation between ros1 and ros2.
@@ -22,68 +20,74 @@ def generate_launch_description():
 
     ld = launch.LaunchDescription()
 
-    pkg_name = "example_waypoint_flier_simple"
+    pkg_name = "example_waypoint_flier_native"
 
     this_pkg_path = get_package_share_directory(pkg_name)
 
+    # #{ uav_name
 
-    # #{ uav_name 
+    uav_name = LaunchConfiguration('uav_name')
+
     ld.add_action(DeclareLaunchArgument(
         'uav_name',
-        default_value=EnvironmentVariable('UAV_NAME',default_value='uav1'),
-        description="The uav name used for namespacing",
+        default_value=os.getenv('UAV_NAME', "uav1"),
+        description="The uav name used for namespacing.",
     ))
-    
-    # uav_name = LaunchConfiguration('uav_name')
-    uav_name=os.getenv('UAV_NAME', "uav1")
+
     # #} end of custom_config
 
-    namespace = uav_name,
+    # #{ standalone
 
-    # # { standalone 
-    
     ld.add_action(DeclareLaunchArgument(
        'standalone',
        default_value='true'
     ))
 
     standalone = LaunchConfiguration('standalone')
-    # # }
 
-    # # { log level 
-    
+    # #} end of standalone
+
+    # #{ log_level
+
     ld.add_action(DeclareLaunchArgument(name='log_level', default_value='info'))
 
-    # #}  
-    
+    # #} end of log_level
 
-    # # {waypoint flier simple node
-    
+    # #{ use_sim_time
+
+    use_sim_time = LaunchConfiguration('use_sim_time')
+
+    ld.add_action(DeclareLaunchArgument(
+        'use_sim_time',
+        default_value=os.getenv('USE_SIM_TIME', "false"),
+        description="Should the node subscribe to sim time?",
+    ))
+
+    # #} end of custom_config
+
+    # #{ waypoint flier native node
+
     node = ComposableNode(
+        package=pkg_name,
+        plugin='example_waypoint_flier_native::WaypointFlierNative',
+        namespace=uav_name,
+        name='waypoint_flier_native',
+        parameters=[
+            {"uav_name": uav_name},
+            {"use_sim_time": use_sim_time},
+            {"config": this_pkg_path+'/config/waypoint_flier_native.yaml'},
+        ],
+        remappings=[
+            # # subscribers
+            ("~/odom_in", "estimation_manager/odom_main"),
+            # publishers
+            ("~/reference_out", "control_manager/reference"),
+            # service servers
+            ("~/start_waypoint_flying_in", "~/start_waypoint_flying"),
+        ],
+    )
 
-                package=pkg_name,
-                plugin='example_waypoint_flier_simple::WaypointFlierSimple',
-                namespace=uav_name,
-                name='example_waypoint_flier_simple',
-
-                parameters=[
-                    {"uav_name": uav_name}, 
-                    {"topic_prefix": "/" + uav_name},
-                    {"enable_profiler": False},
-                    {"config": this_pkg_path+'/config/waypoint_flier_simple.yaml'},        
-                ],
-
-                remappings=[
-                    # # subscribers
-                    ("~/odom_in","estimation_manager/odom_main"),
-                    # publishers
-                    ("~/reference_out","control_manager/reference"),
-                    # service service
-                    ("~/start", "~/start"),
-                ],
-            )
-    
-    
+    # #} end of waypoint flier native node
 
     # #{ container_name
 
@@ -97,8 +101,10 @@ def generate_launch_description():
 
     ld.add_action(declare_container_name)
 
-    # #} end of container_name    
-    
+    # #} end of container_name
+
+    # #{ load into container
+
     load_into_existing = LoadComposableNodes(
         target_container = container_name,
         composable_node_descriptions = [node],
@@ -107,13 +113,13 @@ def generate_launch_description():
 
     ld.add_action(load_into_existing)
 
-    # # } end of waypoint flier node
+    # #} end of load into container
 
-    # # { standalone container 
-    
+    # #{ standalone container
+
     ld.add_action(ComposableNodeContainer(
         namespace=uav_name,
-        name='waypoint_flier_simple_container',
+        name='waypoint_flier_native_container',
         package = 'rclcpp_components',
         executable = 'component_container_mt',
         output = 'screen',
@@ -121,7 +127,7 @@ def generate_launch_description():
         composable_node_descriptions=[node],
         condition = IfCondition(standalone)
     ))
-    
-    # # }
+
+    # #} end of standalone container
 
     return ld

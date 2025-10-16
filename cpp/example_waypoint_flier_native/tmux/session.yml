@@ -19,42 +19,38 @@ windows:
   - simulator:
       layout: tiled
       panes:
-        - ros2 launch mrs_multirotor_simulator multirotor_simulator.py custom_config:=./config/simulator.yaml
+        - ros2 launch mrs_multirotor_simulator multirotor_simulator.launch.py custom_config:=./config/simulator.yaml
   - hw_api:
       layout: tiled
       panes:
-        - ros2 launch mrs_multirotor_simulator hw_api.py
+        - ros2 launch mrs_multirotor_simulator hw_api.launch.py
   - core:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_core core.py 
-          platform_config:=$PLATFORM_CONFIG 
-          world_config:=./config/world_config.yaml 
-          custom_config:=./config/custom_config.yaml 
+        - ros2 launch mrs_uav_core core.launch.py
+          platform_config:=$PLATFORM_CONFIG
+          world_config:=./config/world_config.yaml
+          custom_config:=./config/custom_config.yaml
           network_config:=./config/network_config.yaml
-
   - status:
       layout: tiled
       panes:
         - ros2 run mrs_uav_status status.sh
-  
-  - waypoint_flier_simple:
+  - waypoint_flier:
       layout: tiled
-      root: ~/ws_mrs/
       panes:
-        - 'waitForTakeoff && source install/setup.bash && ros2 launch example_waypoint_flier_simple waypoint_flier_simple.py'
-        - 'history -s ros2 service call /uav1/example_waypoint_flier_simple/start_waypoint_flying std_srvs/srv/Trigger {}'
-
+        - ros2 launch example_waypoint_flier_native waypoint_flier_native.launch.py
+        - 'history -s ros2 service call /$UAV_NAME/waypoint_flier_native/start_waypoint_flying std_srvs/srv/Trigger {}'
   - takeoff:
       layout: tiled
       panes:
-        - ros2 launch mrs_uav_autostart automatic_start.py custom_config:=./config/automatic_start.yaml
+        - ros2 launch mrs_uav_autostart automatic_start.launch.py custom_config:=./config/automatic_start.yaml
         - waitForCore && ./takeoff.sh
+  - commands:
+      layout: tiled
+      panes:
+        - waitForTakeoff && ./goto.py
   - rviz:
       layout: tiled
       panes:
         - ros2 run rviz2 rviz2 -d ./rviz.rviz
-  - reconfigure:
-      layout: tiled
-      panes:
-        - ros2 run rqt_reconfigure rqt_reconfigure

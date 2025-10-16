@@ -6,11 +6,12 @@ This repository includes Core ROS examples for the [MRS UAV System](https://gith
 
 ## C++
 
-* [waypoint_flier_simple](./cpp/waypoint_flier_simple) - Minimalistic C++ Nodelet with "_vanilla_" ROS features
-* [waypoint_flier](./cpp/waypoint_flier) - Full C++ Nodelet with "_MRS_" libraries and wrappers
-* [controller_plugin](./cpp/controller_plugin) - Example of Controller plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
-* [tracker_plugin](./cpp/tracker_plugin) - Example of Tracker plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
-* [pluginlib_example](./cpp/pluginlib_example) - Example of ROS Pluginlib, similar to how it is used in the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [example_waypoint_flier](./cpp/example_waypoint_flier) - Full C++ ROS2 component (nodelet) with "_MRS_" libraries and wrappers
+* [example_controller_plugin](./cpp/example_controller_plugin) - Example of Controller plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [example_tracker_plugin](./cpp/example_tracker_plugin) - Example of Tracker plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [example_estimator_plugin](./cpp/example_estimator_plugin) - Example of Tracker plugin for the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [example_pluginlib](./cpp/example_pluginlib) - Example of ROS Pluginlib, similar to how it is used in the [ControlManager](https://github.com/ctu-mrs/mrs_uav_managers)
+* [example_waypoint_flier_native](./cpp/example_waypoint_flier_native) - Minimalistic C++ ROS2 component (nodelet) with "_vanilla_" ROS features
 
 ## Python
 

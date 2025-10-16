@@ -1,24 +1,27 @@
+#pragma once
+
 #include <rclcpp/parameter_map.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-namespace utils
+namespace waypoint_flier_native
 {
 
+namespace utils
+{
 // Overload << operator for std::vector
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
-    os << "[";
-    for (size_t i = 0; i < vec.size(); ++i) {
-        os << vec[i];
-        if (i != vec.size() - 1) {
-            os << ", "; // Add a comma between elements
-        }
+  os << "[";
+  for (size_t i = 0; i < vec.size(); ++i) {
+    os << vec[i];
+    if (i != vec.size() - 1) {
+      os << ", ";  // Add a comma between elements
     }
-    os << "]";
-    return os;
+  }
+  os << "]";
+  return os;
 }
 
-/* load_param() method //{ */
 // a helper parameter loading function
 template <class T>
 bool load_param(const std::string& param_name, T& param_dest, T default_value, rclcpp::Node& node) {
@@ -26,7 +29,10 @@ bool load_param(const std::string& param_name, T& param_dest, T default_value, r
   if (!node.has_parameter(param_name)) {
     // firstly, the parameter has to be specified (together with its type), which can throw an exception
     try {
-      node.declare_parameter<T>(param_name,default_value);  // for Galactic and newer, the type has to be specified here
+      rcl_interfaces::msg::ParameterDescriptor descriptor;
+      descriptor.read_only = true;
+
+      node.declare_parameter<T>(param_name, default_value, descriptor);  // for Galactic and newer, the type has to be specified here
     }
     catch (const std::exception& e) {
       // this can happen if (see
@@ -65,6 +71,6 @@ T parse_param2(const std::string& param_name, bool& ok_out, rclcpp::Node& node) 
   return out;
 }
 
-//}
-
 }  // namespace utils
+
+}  // namespace waypoint_flier_native
