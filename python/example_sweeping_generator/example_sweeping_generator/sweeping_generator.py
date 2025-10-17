@@ -3,6 +3,8 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
 from mrs_msgs.msg import ControlManagerDiagnostics,Reference
 from mrs_msgs.srv import PathSrv,PathSrv_Request
@@ -13,6 +15,11 @@ class SweepingGenerator(Node):
     def __init__(self):
 
         super().__init__('sweeping_generator')
+
+        self.cbkgr_ss = MutuallyExclusiveCallbackGroup() # for service servers
+        self.cbkgr_sc = MutuallyExclusiveCallbackGroup() # for service client
+        self.cbkgr_timers = MutuallyExclusiveCallbackGroup() # for timers
+
         self.declare_parameter('frame_id', "world_origin")
 
         self.declare_parameter("center.x", 0.0)
@@ -39,17 +46,17 @@ class SweepingGenerator(Node):
 
         ## | --------------------- service servers -------------------- |
 
-        self.ss_start = self.create_service(Vec1, "~/start_in", self.callback_start)
+        self.ss_start = self.create_service(Vec1, "~/start_in", self.callback_start, callback_group=self.cbkgr_ss)
 
         ## | --------------------- service clients -------------------- |
 
-        self.sc_path = self.create_client(PathSrv,"~/path_out")
+        self.sc_path = self.create_client(PathSrv,"~/path_out", callback_group=self.cbkgr_sc)
         while not self.sc_path.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn("[SweepingGenerator]: waiting for path_out service...")
 
         ## | ------------------------- timers ------------------------- |
 
-        self.timer_main = self.create_timer(1.0/self.timer_main_rate, self.timer_main_callback)
+        self.timer_main = self.create_timer(1.0/self.timer_main_rate, self.timer_main_callback, callback_group=self.cbkgr_timers)
 
         self.is_initialized = True
 
@@ -142,11 +149,13 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    sweeping_gen = SweepingGenerator()
+    node = SweepingGenerator()
 
-    rclpy.spin(sweeping_gen)
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+    executor.spin()
 
-    sweeping_gen.destroy_node()
+    node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':

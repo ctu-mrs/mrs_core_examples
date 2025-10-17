@@ -38,7 +38,7 @@ def generate_launch_description():
     sweeping_generator = Node(
         package=pkg_name,
         namespace=uav_name,
-        name='sweeeping_generator',
+        name='sweeping_generator',
         executable='sweeping_generator.py',
         parameters=[
             get_package_share_directory('example_sweeping_generator') + 'config/sweeping_generator.yaml',
