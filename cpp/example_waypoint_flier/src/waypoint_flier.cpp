@@ -74,7 +74,7 @@ class WaypointFlier : public mrs_lib::Node {
 public:
   WaypointFlier(rclcpp::NodeOptions options);
 
-  void intialize();
+  void initialize();
 
 private:
   rclcpp::Node::SharedPtr  node_;
@@ -171,14 +171,14 @@ private:
 /* WaypointFlier() //{ */
 
 WaypointFlier::WaypointFlier(rclcpp::NodeOptions options) : Node("example_waypoint_flier", options) {
-  intialize();
+  initialize();
 }
 
 //}
 
 /* initialize() //{ */
 
-void WaypointFlier::intialize() {
+void WaypointFlier::initialize() {
 
   node_  = this->this_node_ptr();
   clock_ = node_->get_clock();

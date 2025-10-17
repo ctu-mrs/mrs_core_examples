@@ -48,7 +48,17 @@ ament_target_dependencies(ExampleWaypointFlierNative_WaypointFlier
 rclcpp_components_register_nodes(ExampleWaypointFlierNative_WaypointFlier PLUGIN "example_waypoint_flier_native::WaypointFlierNative" EXECUTABLE ExampleWaypointFlierNative_WaypointFlier)
 
 ## --------------------------------------------------------------
-## |                           Install                          |
+## |                           testing                          |
+## --------------------------------------------------------------
+
+if(ENABLE_TESTS)
+
+  add_subdirectory(test)
+
+endif()
+
+## --------------------------------------------------------------
+## |                           install                          |
 ## --------------------------------------------------------------
 
 ament_export_libraries(

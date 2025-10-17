@@ -1,22 +1,23 @@
 /* includes //{ */
 
-/* each ros package must have these*/
+// each ros package must have these
 #include <rclcpp/rclcpp.hpp>
 
-/* for storing information about the state of the uav (position, twist) + covariances */
+// for storing information about the state of the uav (position, twist) + covariances
 #include <nav_msgs/msg/odometry.hpp>
 
-/* custom msgs of MRS group */
+// custom msgs of MRS group
 #include <mrs_msgs/msg/reference_stamped.hpp>
 
-/* for calling simple ros services */
+// for calling simple ros services
 #include <std_srvs/srv/trigger.hpp>
 
+// helper functions for loading parameters
 #include <params.h>
 
 //}
 
-/* usign //{ */
+/* using //{ */
 
 using namespace std::chrono_literals;
 
@@ -111,7 +112,7 @@ void WaypointFlierNative::initialize() {
   loaded_successfully &= waypoint_flier_native::utils::load_param("max_z", max_z_, 5.0, *node_);
 
   if (!loaded_successfully) {
-    RCLCPP_INFO_ONCE(node_->get_logger(), "Failed to load non optional parameters");
+    RCLCPP_INFO_ONCE(node_->get_logger(), "failed to load non-optional parameters");
   }
 
   // | -------- initialize a publisher for UAV reference -------- |
