@@ -5,8 +5,8 @@ on:
   push:
     branches: [ ros2 ]
 
-    paths-ignore:
-      - '**/README.md'
+    # paths-ignore:
+    #   - '**/README.md'
 
   workflow_dispatch:
 
