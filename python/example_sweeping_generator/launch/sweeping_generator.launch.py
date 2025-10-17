@@ -33,7 +33,7 @@ def generate_launch_description():
 
     # #} end of custom_config
 
-    # # { sweeping_generator
+    # #{ sweeping generator node
 
     sweeping_generator = Node(
         package=pkg_name,
@@ -52,6 +52,8 @@ def generate_launch_description():
             ("~/start_in", "~/start"),
         ],
     )
+
+    # #} end of sweeping generator node
 
     ld.add_action(sweeping_generator)
 
