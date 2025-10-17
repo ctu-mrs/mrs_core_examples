@@ -17,6 +17,11 @@ This repository includes Core ROS examples for the [MRS UAV System](https://gith
 
 * [sweeping_generator](./python/sweeping_generator) - Minimalistic Python Example that generates sweeping path for the UAV
 
+## Tests
+
+All the packages contain an example rostest.
+You rostest to make sure your work is replicable and that your code can also work outside of your own installation.
+
 # Disclaimer
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
