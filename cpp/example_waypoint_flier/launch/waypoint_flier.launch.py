@@ -82,7 +82,7 @@ def generate_launch_description():
 
             ],
             remappings=[
-                # # subscribers
+                # subscribers
                 ("~/odom_in","estimation_manager/odom_main"),
                 ("~/control_manager_diagnostics_in","control_manager/diagnostics"),
                 ("~/odom_gt_in","ground_truth"),

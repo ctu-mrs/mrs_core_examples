@@ -102,6 +102,12 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY tmux
+  USE_SOURCE_PERMISSIONS
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_export_targets(
   export_${PROJECT_NAME} HAS_LIBRARY_TARGET
 )

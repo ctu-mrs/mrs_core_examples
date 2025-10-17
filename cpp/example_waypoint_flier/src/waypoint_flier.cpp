@@ -62,13 +62,17 @@ using vec3_t = mrs_lib::geometry::vec_t<3>;
 namespace example_waypoint_flier
 {
 
-/* class WaypointFlier //{ */
+/* DynParams_t //{ */
 
 struct DynParams_t
 {
   double waypoint_idle_time;
   double rate_publish_dist;
 };
+
+//}
+
+/* class WaypointFlier //{ */
 
 class WaypointFlier : public mrs_lib::Node {
 public:
