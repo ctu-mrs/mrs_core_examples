@@ -12,10 +12,10 @@
 
   <license>BSD 3-Clause</license>
 
-  <depend>rclcpp</depend>
-  <depend>mrs_msgs</depend>
-  <depend>mrs_lib</depend>
-  <depend>mrs_uav_testing</depend>
+  <test_depend>rclcpp</test_depend>
+  <test_depend>mrs_msgs</test_depend>
+  <test_depend>mrs_lib</test_depend>
+  <test_depend>mrs_uav_testing</test_depend>
   
   <exec_depend>rclpy</exec_depend>
   <exec_depend>ament_cmake</exec_depend>
