@@ -52,7 +52,7 @@ class SweepingGenerator(Node):
 
         self.sc_path = self.create_client(PathSrv,"~/path_out", callback_group=self.cbkgr_sc)
         while not self.sc_path.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warn("[SweepingGenerator]: waiting for path_out service...")
+            self.get_logger().warn("waiting for path_out service...")
 
         ## | ------------------------- timers ------------------------- |
 
@@ -60,12 +60,13 @@ class SweepingGenerator(Node):
 
         self.is_initialized = True
 
-        self.get_logger().info('[SweepingGenerator]: initialized')
+        self.get_logger().info('initialized')
 
     ## | ------------------------- methods ------------------------ |
 
     def plan_path(self, step_size):
-        self.get_logger().info("[SweepingGenerator]: planning path")
+
+        self.get_logger().info("planning path")
 
         path_msg = PathSrv_Request()
 
@@ -99,7 +100,7 @@ class SweepingGenerator(Node):
         if not self.is_initialized:
             return
 
-        self.get_logger().info("[SweepingGenerator]: getting ControlManager diagnostics",once=True)
+        self.get_logger().info("getting ControlManager diagnostics", once=True)
         self.sub_control_manager_diag = msg
 
     def callback_start(self, request, response):
@@ -114,17 +115,17 @@ class SweepingGenerator(Node):
 
         future = self.sc_path.call_async(path_msg)
 
-        # self.get_logger().info("[SweepingGenerator]: client for path generation requested the service.")
+        # self.get_logger().info("client for path generation requested the service.")
         rclpy.spin_until_future_complete(self, future)
 
         if future.result() is not None:
             result = future.result()
             if result.success:
-                self.get_logger().info("[SweepingGenerator]: path set")
+                self.get_logger().info("path set")
             else:
-                self.get_logger().warn(f"[SweepingGenerator]: path setting failed: {result.message}")
+                self.get_logger().warn(f"path setting failed: {result.message}")
         else:
-            self.get_logger().error("[SweepingGenerator]: path service call failed")
+            self.get_logger().error("path service call failed")
 
         response.success = True
         response.message = "starting"
@@ -136,14 +137,14 @@ class SweepingGenerator(Node):
         if not self.is_initialized:
             return
         
-        self.get_logger().info("[SweepingGenerator]: main timer spinning", once=True)
+        self.get_logger().info("main timer spinning", once=True)
 
         if isinstance(self.sub_control_manager_diag, ControlManagerDiagnostics):
 
             if self.sub_control_manager_diag.tracker_status.have_goal:
-                self.get_logger().info("[SweepingGenerator]: tracker has goal")
+                self.get_logger().info("tracker has goal")
             else:
-                self.get_logger().info("[SweepingGenerator]: waiting for command")
+                self.get_logger().info("waiting for command")
 
 def main(args=None):
 

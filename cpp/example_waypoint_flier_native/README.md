@@ -1,6 +1,6 @@
-# WaypointFlier Simple - ROS simple example
+# WaypointFlier Native - ROS example
 
-This package was created as an example of how to write a very simple ROS component (nodelet).
+This package was created as an example of how to write a native ROS component (nodelet).
 You can test the program in simulation (see our [simulation tutorial](https://ctu-mrs.github.io/docs/simulation/howto.html)).
 
 ## Functionality
@@ -23,7 +23,7 @@ Then, call the services prepared in the terminal window either by:
 
 Or typing the following command into a terminal connected to the ROS server:
 ```
-ros2 service call /uav1/waypoint_flier_simple/start /std_srvs/srv/Trigger 
+ros2 service call /uav1/waypoint_flier_native/start /std_srvs/srv/Trigger {}
 ```
 
 ## Package structure
@@ -32,7 +32,7 @@ See [ROS packages](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libra
 
 * `src` directory contains all source files
 * `launch` directory contains `.py` files which are used to parametrize the nodelet. Command-line arguments, as well as environment variables, can be loaded from the launch files, the nodelet can be put into the correct namespace (each UAV has its namespace to allow multi-robot applications), config files are loaded, and parameters passed to the nodelet. See [.py files](https://docs.ros.org/en/foxy/How-To-Guides/Launching-composable-nodes.html)
-* `include` directory contains necessory 
+* `include` directory contains necessory
 * `config` directory contains parameters in `.yaml` files. See [.yaml files](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Monitoring-For-Parameter-Changes-CPP.html)
 * `package.xml` defines properties of the package, such as package name and dependencies. See [package.xml](https://docs.ros.org/en/humble/How-To-Guides/Migrating-from-ROS1/Migrating-Package-XML.html)
 

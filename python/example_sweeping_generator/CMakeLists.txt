@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15.0)
 project(example_sweeping_generator)
 
 set(DEPENDENCIES
