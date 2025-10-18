@@ -117,6 +117,15 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Install the sources into the .deb package such that they can be
+# found even on the installed version of the system.
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ./*)
+list(FILTER SOURCE_FILES EXCLUDE REGEX "\.git.*")
+install(
+  FILES ${SOURCE_FILES}
+  DESTINATION share/${PROJECT_NAME}/source
+)
+
 ament_export_targets(
   export_${PROJECT_NAME} HAS_LIBRARY_TARGET
 )

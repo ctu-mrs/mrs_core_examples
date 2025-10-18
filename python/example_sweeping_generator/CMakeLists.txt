@@ -50,12 +50,21 @@ install(
   DESTINATION lib/${PROJECT_NAME}
   )
 
-ament_python_install_package(${PROJECT_NAME})
-
 install(
   DIRECTORY tmux
   USE_SOURCE_PERMISSIONS
   DESTINATION share/${PROJECT_NAME}
   )
+
+# Install the sources into the .deb package such that they can be
+# found even on the installed version of the system.
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ./*)
+list(FILTER SOURCE_FILES EXCLUDE REGEX "\.git.*")
+install(
+  FILES ${SOURCE_FILES}
+  DESTINATION share/${PROJECT_NAME}/source
+)
+
+ament_python_install_package(${PROJECT_NAME})
 
 ament_package()
