@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.8)
 project(example_sweeping_generator)
 
 set(DEPENDENCIES
@@ -55,15 +55,6 @@ install(
   USE_SOURCE_PERMISSIONS
   DESTINATION share/${PROJECT_NAME}
   )
-
-# Install the sources into the .deb package such that they can be
-# found even on the installed version of the system.
-file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ./*)
-list(FILTER SOURCE_FILES EXCLUDE REGEX "\.git.*")
-install(
-  FILES ${SOURCE_FILES}
-  DESTINATION share/${PROJECT_NAME}/source
-)
 
 ament_python_install_package(${PROJECT_NAME})
 
