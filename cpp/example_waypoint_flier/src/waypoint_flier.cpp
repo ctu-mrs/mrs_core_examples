@@ -415,9 +415,8 @@ void WaypointFlier::timerPublishSetReference() {
         }
       }
 
-      RCLCPP_INFO(node_->get_logger(), "shutting down.");
-      rclcpp::shutdown();
-      exit(1);
+      timer_publisher_reference_->stop();
+
       return;
 
     } else {

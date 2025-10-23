@@ -113,6 +113,8 @@ void WaypointFlierNative::initialize() {
 
   if (!loaded_successfully) {
     RCLCPP_INFO_ONCE(node_->get_logger(), "failed to load non-optional parameters");
+    rclcpp::shutdown();
+    exit(1);
   }
 
   // | -------- initialize a publisher for UAV reference -------- |
@@ -129,6 +131,8 @@ void WaypointFlierNative::initialize() {
 
   srv_server_start_ = node_->create_service<std_srvs::srv::Trigger>(
       "~/start_waypoint_flying_in", std::bind(&WaypointFlierNative::callbackStart, this, std::placeholders::_1, std::placeholders::_2));
+
+  // | --------------------- finish the init -------------------- |
 
   is_initialized_ = true;
 }
