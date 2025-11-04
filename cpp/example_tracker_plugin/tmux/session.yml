@@ -49,7 +49,7 @@ windows:
   - rviz:
       layout: tiled
       panes:
-        - ros2 run rviz2 rviz2 -d ./rviz.rviz
+        - ros2 run rviz2 rviz2 -d ./rviz.rviz --ros-args -p use_sim_time:=true
   - layout:
       layout: tiled
       panes:
