@@ -8,7 +8,7 @@ rate:
 n_loops: 2 # [-]
 
 # should the UAV land after flying through all the waypoints?
-land_at_the_end: false
+land_at_the_end: true
 
 # how long should the UAV idle at a waypoint?
 waypoint_idle_time: 0.5 # [s]

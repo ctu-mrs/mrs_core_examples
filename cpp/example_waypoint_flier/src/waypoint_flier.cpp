@@ -213,6 +213,7 @@ void WaypointFlier::initialize() {
   param_loader.loadParam("waypoints_frame", _waypoints_frame_);
   param_loader.loadParam("rate/publish_reference", _rate_timer_publisher_reference_);
   param_loader.loadParam("rate/check_subscribers", _rate_timer_check_subscribers_);
+  param_loader.loadParam("land_at_the_end", _land_end_);
 
   /* load waypoints as a half-dynamic matrix from config file */
   Eigen::MatrixXd waypoint_matrix;
