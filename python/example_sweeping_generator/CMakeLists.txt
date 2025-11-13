@@ -46,8 +46,9 @@ install(
   )
 
 install(
-  FILES ${PROJECT_NAME}/sweeping_generator.py
-  DESTINATION lib/${PROJECT_NAME}
+  DIRECTORY ${PROJECT_NAME}
+  USE_SOURCE_PERMISSIONS
+  DESTINATION lib
   )
 
 install(
