@@ -6,10 +6,11 @@
   <version>2.0.0</version>
   <description>Example Waypoint Flier Native</description>
 
-  <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
   <maintainer email="tomas.baca@fel.cvut.cz">klaxalk</maintainer>
 
   <license>BSD 3-Clause</license>
+
+  <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_ros</buildtool_depend>

@@ -6,11 +6,12 @@
   <version>2.0.0</version>
   <description>Example Waypoint Flier</description>
 
-  <author email="matej.petrlik@fel.cvut.cz">Matej Petrlik</author>
   <maintainer email="matej.petrlik@fel.cvut.cz">Matej Petrlik</maintainer>
   <maintainer email="tomas.baca@fel.cvut.cz">klaxalk</maintainer>
 
   <license>BSD 3-Clause</license>
+
+  <author email="matej.petrlik@fel.cvut.cz">Matej Petrlik</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
