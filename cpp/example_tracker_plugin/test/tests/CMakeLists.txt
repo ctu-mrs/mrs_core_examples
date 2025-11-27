@@ -1,1 +1,1 @@
-add_subdirectory(./goto_service)
+add_subdirectory(goto_service)

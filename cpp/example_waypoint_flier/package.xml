@@ -17,14 +17,16 @@
 
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>rclcpp_lifecycle</depend>
-  <depend>launch</depend>
-  <depend>launch_ros</depend>
+  <depend>mrs_lib</depend>
+  <depend>eigen</depend>
+  <depend>mrs_uav_testing</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>mrs_msgs</depend>
-  <depend>mrs_lib</depend>
-  <depend>mrs_uav_testing</depend>
+  <depend>std_msgs</depend>
+
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

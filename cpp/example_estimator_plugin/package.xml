@@ -15,12 +15,14 @@
   <license>BSD 3-Clause</license>
 
   <depend>rclcpp</depend>
-  <depend>rclcpp_components</depend>
   <depend>pluginlib</depend>
-  <depend>mrs_msgs</depend>
   <depend>mrs_lib</depend>
   <depend>mrs_uav_managers</depend>
   <depend>mrs_uav_state_estimators</depend>
+  <depend>eigen</depend>
+  <depend>mrs_msgs</depend>
+
+  <test_depend>mrs_uav_testing</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

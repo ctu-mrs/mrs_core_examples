@@ -15,10 +15,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>pluginlib</depend>
-  <depend>mrs_lib</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
+  <depend>pluginlib</depend>
+  <depend>mrs_lib</depend>
+  <depend>eigen</depend>
+
   <depend>launch</depend>
   <depend>launch_ros</depend>
 
