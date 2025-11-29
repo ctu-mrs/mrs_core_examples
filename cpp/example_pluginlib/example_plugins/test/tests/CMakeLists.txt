@@ -1,1 +1,1 @@
-add_subdirectory(./load_test)
+add_subdirectory(load_test)

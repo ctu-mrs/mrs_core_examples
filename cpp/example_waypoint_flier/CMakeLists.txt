@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.28)
 project(example_waypoint_flier)
 
 # set the correct standards
@@ -17,7 +17,7 @@ endif()
 
 # set the compile options to show code warnings
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options("-Wall" "-Wextra" "-Wpedantic")
 endif()
 
 if(ENABLE_COVERAGE)
@@ -30,45 +30,61 @@ if(ENABLE_COVERAGE)
   add_definitions("-g")
 endif()
 
-SET(DEPENDENCIES
-  rclcpp
-  rclcpp_components
-  geometry_msgs
-  nav_msgs
-  mrs_msgs
-  mrs_lib
-  std_srvs
-  Eigen3
-  mrs_uav_testing
-)
-
-foreach(DEP IN LISTS DEPENDENCIES)
-  find_package(${DEP} REQUIRED)
-endforeach()
-
-set(LIBRARIES
-  ExampleWaypointFlier_WaypointFlier
-)
-
-include_directories(
-  ${rclcpp_INCLUDE_DIRS}
-  ${mrs_lib_INCLUDE_DIRS}
-  ${mrs_uav_testing_INCLUDE_DIRS}
-)
+# Find all dependencies of this package
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(mrs_lib REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(mrs_uav_testing REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(mrs_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 ## --------------------------------------------------------------
 ## |                           compile                          |
 ## --------------------------------------------------------------
 
-add_library(ExampleWaypointFlier_WaypointFlier SHARED
-  src/waypoint_flier.cpp
+# Define the shared library created by this package
+add_library(ExampleWaypointFlier_WaypointFlierComponent SHARED)
+
+# Add sources to the shared library
+# - Source files should be listed in private section.
+# - Header files should be added to a file set.
+#   - If you are using header files, see other examples on how to properly
+#     handle them:
+#     - public headers: `example_plugin_manager`
+#     - private headers: `example_waypoint_flier_native`
+target_sources(ExampleWaypointFlier_WaypointFlierComponent
+  PRIVATE
+    "src/waypoint_flier.cpp"
 )
 
-ament_target_dependencies(ExampleWaypointFlier_WaypointFlier
-  ${DEPENDENCIES}
+# Link to the dependencies used by the library
+# This call automatically sets up include paths as well as linking.
+# Prefer using the `<package>::<lib>` syntax as it provides better error
+# handling in CMake. Most packages export targets in the format
+# `<package>::<package>` that include the whole library.
+# Message libraries unfortunately do not provide this target and users must link
+# against: `${<package>_TARGETS}`.
+target_link_libraries(ExampleWaypointFlier_WaypointFlierComponent
+  PRIVATE
+    rclcpp::rclcpp
+    rclcpp_components::component
+    mrs_lib::mrs_lib
+    Eigen3::Eigen
+    ${geometry_msgs_TARGETS}
+    ${nav_msgs_TARGETS}
+    ${mrs_msgs_TARGETS}
+    ${std_srvs_TARGETS}
 )
 
-rclcpp_components_register_nodes(ExampleWaypointFlier_WaypointFlier PLUGIN "example_waypoint_flier::WaypointFlier" EXECUTABLE ExampleWaypointFlier_WaypointFlier)
+# Register components defined in this library.
+# rclcpp_components_register_nodes(<library> <names of components>...)
+rclcpp_components_register_nodes(ExampleWaypointFlier_WaypointFlierComponent
+  "example_waypoint_flier::WaypointFlier"
+)
 
 ## --------------------------------------------------------------
 ## |                           testing                          |
@@ -84,12 +100,8 @@ endif()
 ## |                           install                          |
 ## --------------------------------------------------------------
 
-ament_export_libraries(
-  ${LIBRARIES}
-)
-
 install(
-  TARGETS ${LIBRARIES}
+  TARGETS ExampleWaypointFlier_WaypointFlierComponent
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -98,26 +110,22 @@ install(
 
 install(
   DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION "share/${PROJECT_NAME}"
 )
 
 install(
   DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION "share/${PROJECT_NAME}"
 )
 
 install(
   DIRECTORY tmux
   USE_SOURCE_PERMISSIONS
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION "share/${PROJECT_NAME}"
 )
 
 ament_export_targets(
   export_${PROJECT_NAME} HAS_LIBRARY_TARGET
-)
-
-ament_export_dependencies(
-  ${DEPENDENCIES}
 )
 
 ament_package()

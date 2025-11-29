@@ -6,22 +6,22 @@
   <version>2.0.0</version>
   <description>Example Waypoint Flier Native</description>
 
-  <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
   <maintainer email="tomas.baca@fel.cvut.cz">klaxalk</maintainer>
 
   <license>BSD 3-Clause</license>
+
+  <author email="hertdani@fel.cvut.cz">Daniel Hert</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>rclcpp_lifecycle</depend>
-  <depend>launch</depend>
-  <depend>launch_ros</depend>
-  <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>mrs_msgs</depend>
+
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
 
   <test_depend>ament_cmake_ros</test_depend>
   <test_depend>launch_testing</test_depend>

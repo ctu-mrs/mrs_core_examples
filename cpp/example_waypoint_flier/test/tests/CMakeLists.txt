@@ -1,1 +1,1 @@
-add_subdirectory(./waypoint_flier)
+add_subdirectory(waypoint_flier)

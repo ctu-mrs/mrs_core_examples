@@ -7,18 +7,19 @@
   <version>2.0.0</version>
   <description>Example Plugins</description>
 
-  <author email="tomas.baca@fel.cvut.cz">Tomas Baca</author>
   <maintainer email="tomas.baca@fel.cvut.cz">Tomas Baca</maintainer>
 
   <license>BSD 3-Clause</license>
 
+  <author email="tomas.baca@fel.cvut.cz">Tomas Baca</author>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>rclcpp_components</depend>
   <depend>pluginlib</depend>
   <depend>example_plugin_manager</depend>
   <depend>mrs_lib</depend>
+  <depend>mrs_uav_testing</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
