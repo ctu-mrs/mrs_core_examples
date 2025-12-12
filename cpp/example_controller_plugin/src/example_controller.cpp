@@ -39,27 +39,27 @@ struct DrsParams_t
 class ExampleController : public mrs_uav_managers::Controller {
 
 public:
-  bool initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
+  bool initialize(const rclcpp::Node::SharedPtr &node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
                   std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers);
 
-  bool activate(const ControlOutput& last_control_output);
+  bool activate(const ControlOutput &last_control_output);
 
   void deactivate(void);
 
   void destroy();
 
-  void updateInactive(const mrs_msgs::msg::UavState& uav_state, const std::optional<mrs_msgs::msg::TrackerCommand>& tracker_command);
+  void updateInactive(const mrs_msgs::msg::UavState &uav_state, const std::optional<mrs_msgs::msg::TrackerCommand> &tracker_command);
 
-  ControlOutput updateActive(const mrs_msgs::msg::UavState& uav_state, const mrs_msgs::msg::TrackerCommand& tracker_command);
+  ControlOutput updateActive(const mrs_msgs::msg::UavState &uav_state, const mrs_msgs::msg::TrackerCommand &tracker_command);
 
   const mrs_msgs::msg::ControllerStatus getStatus();
 
-  void switchOdometrySource(const mrs_msgs::msg::UavState& new_uav_state);
+  void switchOdometrySource(const mrs_msgs::msg::UavState &new_uav_state);
 
   void resetDisturbanceEstimators(void);
 
-  const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> setConstraints(
-      const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request>& constraints);
+  const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>
+  setConstraints(const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request> &constraints);
 
 private:
   rclcpp::Node::SharedPtr  node_;
@@ -119,7 +119,7 @@ private:
 
 /* initialize() //{ */
 
-bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
+bool ExampleController::initialize(const rclcpp::Node::SharedPtr &node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
                                    std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers) {
 
   node_  = node;
@@ -182,7 +182,7 @@ bool ExampleController::initialize(const rclcpp::Node::SharedPtr& node, std::sha
 
 /* //{ activate() */
 
-bool ExampleController::activate(const ControlOutput& last_control_output) {
+bool ExampleController::activate(const ControlOutput &last_control_output) {
 
   activation_control_output_ = last_control_output;
 
@@ -222,8 +222,8 @@ void ExampleController::destroy(void) {
 
 /* updateInactive() //{ */
 
-void ExampleController::updateInactive(const mrs_msgs::msg::UavState&                                       uav_state,
-                                       [[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand>& tracker_command) {
+void ExampleController::updateInactive(const mrs_msgs::msg::UavState                                       &uav_state,
+                                       [[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand> &tracker_command) {
 
   mrs_lib::set_mutexed(mutex_dynparam_mgr_, uav_state, uav_state_);
 
@@ -236,8 +236,8 @@ void ExampleController::updateInactive(const mrs_msgs::msg::UavState&           
 
 /* //{ updateActive() */
 
-ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs::msg::UavState&       uav_state,
-                                                                 const mrs_msgs::msg::TrackerCommand& tracker_command) {
+ExampleController::ControlOutput ExampleController::updateActive(const mrs_msgs::msg::UavState       &uav_state,
+                                                                 const mrs_msgs::msg::TrackerCommand &tracker_command) {
 
   auto drs_params  = mrs_lib::get_mutexed(mutex_dynparam_mgr_, drs_params_);
   auto constraints = mrs_lib::get_mutexed(mutex_constraints_, constraints_);
@@ -451,7 +451,7 @@ const mrs_msgs::msg::ControllerStatus ExampleController::getStatus() {
 
 /* switchOdometrySource() //{ */
 
-void ExampleController::switchOdometrySource([[maybe_unused]] const mrs_msgs::msg::UavState& new_uav_state) {
+void ExampleController::switchOdometrySource([[maybe_unused]] const mrs_msgs::msg::UavState &new_uav_state) {
 }
 
 //}
@@ -465,8 +465,8 @@ void ExampleController::resetDisturbanceEstimators(void) {
 
 /* setConstraints() //{ */
 
-const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleController::setConstraints(
-    [[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request>& constraints) {
+const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>
+ExampleController::setConstraints([[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request> &constraints) {
 
   if (!is_initialized_) {
     return std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>(new mrs_msgs::srv::DynamicsConstraintsSrv::Response());
@@ -485,7 +485,7 @@ const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleCo
 
 //}
 
-}  // namespace example_controller_plugin
+} // namespace example_controller_plugin
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(example_controller_plugin::ExampleController, mrs_uav_managers::Controller)

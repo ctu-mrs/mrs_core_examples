@@ -20,11 +20,11 @@ public:
   void initialize(std::shared_ptr<rclcpp::Node> node, std::shared_ptr<example_plugin_manager::CommonHandlers_t> common_handlers,
                   std::shared_ptr<example_plugin_manager::PrivateHandlers_t> private_handlers);
 
-  bool activate(const int& some_number);
+  bool activate(const int &some_number);
 
   void deactivate(void);
 
-  const std::optional<double> update(const Eigen::Vector3d& input);
+  const std::optional<double> update(const Eigen::Vector3d &input);
 
   // parameter from a config file
   double      _pi_;
@@ -97,7 +97,7 @@ void ExamplePlugin::initialize(std::shared_ptr<rclcpp::Node> node, std::shared_p
 
 /* activate() //{ */
 
-bool ExamplePlugin::activate(const int& some_number) {
+bool ExamplePlugin::activate(const int &some_number) {
 
   RCLCPP_INFO(node_->get_logger(), "[%s]: activated with some_number=%d", _name_.c_str(), some_number);
 
@@ -121,7 +121,7 @@ void ExamplePlugin::deactivate(void) {
 
 /* update() //{ */
 
-const std::optional<double> ExamplePlugin::update(const Eigen::Vector3d& input) {
+const std::optional<double> ExamplePlugin::update(const Eigen::Vector3d &input) {
 
   if (!is_active_) {
     return false;
@@ -146,9 +146,9 @@ const std::optional<double> ExamplePlugin::update(const Eigen::Vector3d& input) 
 
 //}
 
-}  // namespace example_plugin
+} // namespace example_plugin
 
-}  // namespace example_plugins
+} // namespace example_plugins
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(example_plugins::example_plugin::ExamplePlugin, example_plugin_manager::Plugin)

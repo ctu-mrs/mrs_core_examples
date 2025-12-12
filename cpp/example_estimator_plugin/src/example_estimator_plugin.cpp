@@ -15,7 +15,7 @@ public:
   }
 };
 
-}  // namespace example_estimator_plugin
+} // namespace example_estimator_plugin
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(example_estimator_plugin::ExampleEstimator, mrs_uav_managers::StateEstimator)

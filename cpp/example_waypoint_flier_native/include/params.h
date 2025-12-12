@@ -10,12 +10,12 @@ namespace utils
 {
 // Overload << operator for std::vector
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec) {
   os << "[";
   for (size_t i = 0; i < vec.size(); ++i) {
     os << vec[i];
     if (i != vec.size() - 1) {
-      os << ", ";  // Add a comma between elements
+      os << ", "; // Add a comma between elements
     }
   }
   os << "]";
@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
 
 // a helper parameter loading function
 template <class T>
-bool load_param(const std::string& param_name, T& param_dest, T default_value, rclcpp::Node& node) {
+bool load_param(const std::string &param_name, T &param_dest, T default_value, rclcpp::Node &node) {
 
   if (!node.has_parameter(param_name)) {
     // firstly, the parameter has to be specified (together with its type), which can throw an exception
@@ -32,9 +32,9 @@ bool load_param(const std::string& param_name, T& param_dest, T default_value, r
       rcl_interfaces::msg::ParameterDescriptor descriptor;
       descriptor.read_only = true;
 
-      node.declare_parameter<T>(param_name, default_value, descriptor);  // for Galactic and newer, the type has to be specified here
+      node.declare_parameter<T>(param_name, default_value, descriptor); // for Galactic and newer, the type has to be specified here
     }
-    catch (const std::exception& e) {
+    catch (const std::exception &e) {
       // this can happen if (see
       // http://docs.ros.org/en/humble/p/rclcpp/generated/classrclcpp_1_1Node.html#_CPPv4N6rclcpp4Node17declare_parameterERKNSt6stringERKN6rclcpp14ParameterValueERKN14rcl_interfaces3msg19ParameterDescriptorEb):
       // * parameter has already been declared              (rclcpp::exceptions::ParameterAlreadyDeclaredException)
@@ -65,12 +65,12 @@ bool load_param(const std::string& param_name, T& param_dest, T default_value, r
 }
 
 template <class T>
-T parse_param2(const std::string& param_name, bool& ok_out, rclcpp::Node& node) {
+T parse_param2(const std::string &param_name, bool &ok_out, rclcpp::Node &node) {
   T out;
   ok_out = load_param(param_name, out, node);
   return out;
 }
 
-}  // namespace utils
+} // namespace utils
 
-}  // namespace waypoint_flier_native
+} // namespace waypoint_flier_native

@@ -32,34 +32,34 @@ struct DrsParams_t
 class ExampleTracker : public mrs_uav_managers::Tracker {
 
 public:
-  bool initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
+  bool initialize(const rclcpp::Node::SharedPtr &node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
                   std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers);
 
-  std::tuple<bool, std::string> activate([[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand>& last_tracker_cmd);
+  std::tuple<bool, std::string> activate([[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand> &last_tracker_cmd);
   void                          deactivate(void);
   bool                          resetStatic(void);
   void                          destroy(void);
 
-  std::optional<mrs_msgs::msg::TrackerCommand>            update(const mrs_msgs::msg::UavState&                     uav_state,
-                                                                 const mrs_uav_managers::Controller::ControlOutput& last_control_output);
+  std::optional<mrs_msgs::msg::TrackerCommand>            update(const mrs_msgs::msg::UavState                     &uav_state,
+                                                                 const mrs_uav_managers::Controller::ControlOutput &last_control_output);
   const mrs_msgs::msg::TrackerStatus                      getStatus();
-  const std::shared_ptr<std_srvs::srv::SetBool::Response> enableCallbacks(const std::shared_ptr<std_srvs::srv::SetBool::Request>& request);
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> switchOdometrySource(const mrs_msgs::msg::UavState& new_uav_state);
+  const std::shared_ptr<std_srvs::srv::SetBool::Response> enableCallbacks(const std::shared_ptr<std_srvs::srv::SetBool::Request> &request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> switchOdometrySource(const mrs_msgs::msg::UavState &new_uav_state);
 
-  const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Response>         setReference(const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Request>& request);
-  const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Response> setVelocityReference(
-      const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Request>& request);
-  const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Response> setTrajectoryReference(
-      const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Request>& request);
+  const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Response> setReference(const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Request> &request);
+  const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Response>
+  setVelocityReference(const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Request> &request);
+  const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Response>
+  setTrajectoryReference(const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Request> &request);
 
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> hover(const std::shared_ptr<std_srvs::srv::Trigger::Request>& request);
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> startTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request>& request);
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> stopTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request>& request);
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> resumeTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request>& request);
-  const std::shared_ptr<std_srvs::srv::Trigger::Response> gotoTrajectoryStart(const std::shared_ptr<std_srvs::srv::Trigger::Request>& request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> hover(const std::shared_ptr<std_srvs::srv::Trigger::Request> &request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> startTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request> &request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> stopTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request> &request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> resumeTrajectoryTracking(const std::shared_ptr<std_srvs::srv::Trigger::Request> &request);
+  const std::shared_ptr<std_srvs::srv::Trigger::Response> gotoTrajectoryStart(const std::shared_ptr<std_srvs::srv::Trigger::Request> &request);
 
-  const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> setConstraints(
-      const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request>& request);
+  const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>
+  setConstraints(const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request> &request);
 
 private:
   rclcpp::Node::SharedPtr  node_;
@@ -122,7 +122,7 @@ private:
 
 /* initialize() //{ */
 
-bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
+bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr &node, std::shared_ptr<mrs_uav_managers::control_manager::CommonHandlers_t> common_handlers,
                                 std::shared_ptr<mrs_uav_managers::control_manager::PrivateHandlers_t> private_handlers) {
 
   this->common_handlers_  = common_handlers;
@@ -175,7 +175,7 @@ bool ExampleTracker::initialize(const rclcpp::Node::SharedPtr& node, std::shared
 
 /* activate() //{ */
 
-std::tuple<bool, std::string> ExampleTracker::activate([[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand>& last_tracker_cmd) {
+std::tuple<bool, std::string> ExampleTracker::activate([[maybe_unused]] const std::optional<mrs_msgs::msg::TrackerCommand> &last_tracker_cmd) {
 
   if (last_tracker_cmd) {
 
@@ -240,7 +240,7 @@ void ExampleTracker::destroy(void) {
 
 /* switchOdometrySource() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::switchOdometrySource([[maybe_unused]] const mrs_msgs::msg::UavState& new_uav_state) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::switchOdometrySource([[maybe_unused]] const mrs_msgs::msg::UavState &new_uav_state) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -252,8 +252,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::switchOd
 
 /* update() //{ */
 
-std::optional<mrs_msgs::msg::TrackerCommand> ExampleTracker::update([[maybe_unused]] const mrs_msgs::msg::UavState&                     uav_state,
-                                                                    [[maybe_unused]] const mrs_uav_managers::Controller::ControlOutput& last_control_output) {
+std::optional<mrs_msgs::msg::TrackerCommand> ExampleTracker::update([[maybe_unused]] const mrs_msgs::msg::UavState                     &uav_state,
+                                                                    [[maybe_unused]] const mrs_uav_managers::Controller::ControlOutput &last_control_output) {
 
   mrs_lib::set_mutexed(mutex_uav_state_, uav_state, uav_state_);
 
@@ -331,7 +331,7 @@ std::optional<mrs_msgs::msg::TrackerCommand> ExampleTracker::update([[maybe_unus
 
   tracker_cmd.position.x = pos_x_;
   tracker_cmd.position.y = pos_y_;
-  tracker_cmd.position.z = pos_z_ + drs_params.z_offset;  // let's add the dynamically-reconfigurable z_offset
+  tracker_cmd.position.z = pos_z_ + drs_params.z_offset; // let's add the dynamically-reconfigurable z_offset
   tracker_cmd.heading    = heading_;
 
   tracker_cmd.use_position_vertical   = 1;
@@ -368,7 +368,7 @@ const mrs_msgs::msg::TrackerStatus ExampleTracker::getStatus() {
 
 /* enableCallbacks() //{ */
 
-const std::shared_ptr<std_srvs::srv::SetBool::Response> ExampleTracker::enableCallbacks(const std::shared_ptr<std_srvs::srv::SetBool::Request>& request) {
+const std::shared_ptr<std_srvs::srv::SetBool::Response> ExampleTracker::enableCallbacks(const std::shared_ptr<std_srvs::srv::SetBool::Request> &request) {
 
   std::shared_ptr<std_srvs::srv::SetBool::Response> response = std::make_shared<std_srvs::srv::SetBool::Response>();
 
@@ -397,8 +397,8 @@ const std::shared_ptr<std_srvs::srv::SetBool::Response> ExampleTracker::enableCa
 
 /* setReference() //{ */
 
-const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Response> ExampleTracker::setReference(
-    [[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Request>& request) {
+const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Response>
+ExampleTracker::setReference([[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Request> &request) {
 
   goal_x_       = request->reference.position.x;
   goal_y_       = request->reference.position.y;
@@ -417,8 +417,8 @@ const std::shared_ptr<mrs_msgs::srv::ReferenceSrv::Response> ExampleTracker::set
 
 /* setVelocityReference() //{ */
 
-const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Response> ExampleTracker::setVelocityReference(
-    [[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Request>& request) {
+const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Response>
+ExampleTracker::setVelocityReference([[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -430,8 +430,8 @@ const std::shared_ptr<mrs_msgs::srv::VelocityReferenceSrv::Response> ExampleTrac
 
 /* setTrajectoryReference() //{ */
 
-const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Response> ExampleTracker::setTrajectoryReference(
-    [[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Request>& request) {
+const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Response>
+ExampleTracker::setTrajectoryReference([[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -443,8 +443,8 @@ const std::shared_ptr<mrs_msgs::srv::TrajectoryReferenceSrv::Response> ExampleTr
 
 /* hover() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::hover(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request>& request) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response>
+ExampleTracker::hover([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -456,8 +456,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::hover(
 
 /* startTrajectoryTracking() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::startTrajectoryTracking(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request>& request) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response>
+ExampleTracker::startTrajectoryTracking([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -469,8 +469,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::startTra
 
 /* stopTrajectoryTracking() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::stopTrajectoryTracking(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request>& request) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response>
+ExampleTracker::stopTrajectoryTracking([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -482,8 +482,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::stopTraj
 
 /* resumeTrajectoryTracking() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::resumeTrajectoryTracking(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request>& request) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response>
+ExampleTracker::resumeTrajectoryTracking([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -495,8 +495,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::resumeTr
 
 /* gotoTrajectoryStart() //{ */
 
-const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::gotoTrajectoryStart(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request>& request) {
+const std::shared_ptr<std_srvs::srv::Trigger::Response>
+ExampleTracker::gotoTrajectoryStart([[maybe_unused]] const std::shared_ptr<std_srvs::srv::Trigger::Request> &request) {
 
   // This tracker does not implement this method, which is ok.
   // Returning nullptr will "signal" to the Control Manager that nothing will happen.
@@ -508,8 +508,8 @@ const std::shared_ptr<std_srvs::srv::Trigger::Response> ExampleTracker::gotoTraj
 
 /* setConstraints() //{ */
 
-const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleTracker::setConstraints(
-    [[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request>& request) {
+const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response>
+ExampleTracker::setConstraints([[maybe_unused]] const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Request> &request) {
 
   mrs_lib::set_mutexed(mutex_constraints_, request->constraints, constraints_);
 
@@ -523,7 +523,7 @@ const std::shared_ptr<mrs_msgs::srv::DynamicsConstraintsSrv::Response> ExampleTr
 
 //}
 
-}  // namespace example_tracker_plugin
+} // namespace example_tracker_plugin
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(example_tracker_plugin::ExampleTracker, mrs_uav_managers::Tracker)

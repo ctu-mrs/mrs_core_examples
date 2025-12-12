@@ -8,7 +8,7 @@ namespace example_plugin_manager
 
 // | ------ logical units of supplied variables and functions ----------- |
 
-typedef std::function<double(const Eigen::Vector3d& input)> vectorNorm_t;
+typedef std::function<double(const Eigen::Vector3d &input)> vectorNorm_t;
 
 struct VectorCalculator_t
 {
@@ -24,4 +24,4 @@ struct CommonHandlers_t
   VectorCalculator_t           vector_calculator;
 };
 
-}  // namespace example_plugin_manager
+} // namespace example_plugin_manager

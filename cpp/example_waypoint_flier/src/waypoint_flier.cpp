@@ -163,11 +163,11 @@ private:
 
   // | -------------------- support functions ------------------- |
 
-  std::vector<mrs_msgs::msg::Reference> matrixToPoints(const Eigen::MatrixXd& matrix);
+  std::vector<mrs_msgs::msg::Reference> matrixToPoints(const Eigen::MatrixXd &matrix);
 
-  void offsetPoints(std::vector<mrs_msgs::msg::Reference>& points, const Eigen::MatrixXd& offset);
+  void offsetPoints(std::vector<mrs_msgs::msg::Reference> &points, const Eigen::MatrixXd &offset);
 
-  double distance(const mrs_msgs::msg::Reference& waypoint, const geometry_msgs::msg::Pose& pose);
+  double distance(const mrs_msgs::msg::Reference &waypoint, const geometry_msgs::msg::Pose &pose);
 };
 
 //}
@@ -205,7 +205,7 @@ void WaypointFlier::initialize() {
 
   dynparam_mgr_->register_param("waypoint_idle_time", &drs_params_.waypoint_idle_time, mrs_lib::DynparamMgr::range_t<double>(0.0, 5.0));
   dynparam_mgr_->register_param("rate/publish_dist_to_waypoint", &drs_params_.rate_publish_dist, mrs_lib::DynparamMgr::range_t<double>(1.0, 100.0),
-                                (std::function<void(const double&)>)std::bind(&WaypointFlier::callbackRatePublishDist, this, std::placeholders::_1));
+                                (std::function<void(const double &)>)std::bind(&WaypointFlier::callbackRatePublishDist, this, std::placeholders::_1));
 
   param_loader.loadParam("uav_name", _uav_name_);
   param_loader.loadParam("n_loops", _n_loops_);
@@ -218,7 +218,7 @@ void WaypointFlier::initialize() {
   /* load waypoints as a half-dynamic matrix from config file */
   Eigen::MatrixXd waypoint_matrix;
 
-  param_loader.loadMatrixDynamic("waypoints", waypoint_matrix, -1, 4);  // -1 indicates the dynamic dimension
+  param_loader.loadMatrixDynamic("waypoints", waypoint_matrix, -1, 4); // -1 indicates the dynamic dimension
 
   waypoints_            = matrixToPoints(waypoint_matrix);
   n_waypoints_          = waypoints_.size();
@@ -665,7 +665,7 @@ void WaypointFlier::callbackRatePublishDist(const double param_value) {
 
 /* matrixToPoints() //{ */
 
-std::vector<mrs_msgs::msg::Reference> WaypointFlier::matrixToPoints(const Eigen::MatrixXd& matrix) {
+std::vector<mrs_msgs::msg::Reference> WaypointFlier::matrixToPoints(const Eigen::MatrixXd &matrix) {
 
   std::vector<mrs_msgs::msg::Reference> points;
 
@@ -687,7 +687,7 @@ std::vector<mrs_msgs::msg::Reference> WaypointFlier::matrixToPoints(const Eigen:
 
 /* offsetPoints() //{ */
 
-void WaypointFlier::offsetPoints(std::vector<mrs_msgs::msg::Reference>& points, const Eigen::MatrixXd& offset) {
+void WaypointFlier::offsetPoints(std::vector<mrs_msgs::msg::Reference> &points, const Eigen::MatrixXd &offset) {
 
   for (size_t i = 0; i < points.size(); i++) {
 
@@ -702,7 +702,7 @@ void WaypointFlier::offsetPoints(std::vector<mrs_msgs::msg::Reference>& points, 
 
 /* distance() //{ */
 
-double WaypointFlier::distance(const mrs_msgs::msg::Reference& waypoint, const geometry_msgs::msg::Pose& pose) {
+double WaypointFlier::distance(const mrs_msgs::msg::Reference &waypoint, const geometry_msgs::msg::Pose &pose) {
 
   return mrs_lib::geometry::dist(vec3_t(waypoint.position.x, waypoint.position.y, waypoint.position.z),
                                  vec3_t(pose.position.x, pose.position.y, pose.position.z));
@@ -710,7 +710,7 @@ double WaypointFlier::distance(const mrs_msgs::msg::Reference& waypoint, const g
 
 //}
 
-}  // namespace example_waypoint_flier
+} // namespace example_waypoint_flier
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(example_waypoint_flier::WaypointFlier)

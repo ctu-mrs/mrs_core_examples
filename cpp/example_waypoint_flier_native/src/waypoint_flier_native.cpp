@@ -30,7 +30,7 @@ namespace example_waypoint_flier_native
 
 class WaypointFlierNative {
 public:
-  WaypointFlierNative(const rclcpp::NodeOptions& options);
+  WaypointFlierNative(const rclcpp::NodeOptions &options);
 
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() {
     return node_->get_node_base_interface();
@@ -82,7 +82,7 @@ private:
 
   // | ------------------ Additional functions ------------------ |
 
-  double distance(const mrs_msgs::msg::ReferenceStamped& waypoint, const nav_msgs::msg::Odometry& odom);
+  double distance(const mrs_msgs::msg::ReferenceStamped &waypoint, const nav_msgs::msg::Odometry &odom);
 
   double getRandomDouble(double min, double max);
 };
@@ -91,7 +91,7 @@ private:
 
 /* WaypointFlierNative() //{ */
 
-WaypointFlierNative::WaypointFlierNative(const rclcpp::NodeOptions& options) : node_(std::make_shared<rclcpp::Node>("WaypointFlierNative", options)) {
+WaypointFlierNative::WaypointFlierNative(const rclcpp::NodeOptions &options) : node_(std::make_shared<rclcpp::Node>("WaypointFlierNative", options)) {
 
   initialize();
 }
@@ -235,7 +235,7 @@ bool WaypointFlierNative::callbackStart([[maybe_unused]] const std::shared_ptr<s
 
 /* distance() //{ */
 
-double WaypointFlierNative::distance(const mrs_msgs::msg::ReferenceStamped& waypoint, const nav_msgs::msg::Odometry& odom) {
+double WaypointFlierNative::distance(const mrs_msgs::msg::ReferenceStamped &waypoint, const nav_msgs::msg::Odometry &odom) {
 
   return sqrt((pow(waypoint.reference.position.x - odom.pose.pose.position.x, 2)) + (pow(waypoint.reference.position.y - odom.pose.pose.position.y, 2)) +
               (pow(waypoint.reference.position.z - odom.pose.pose.position.z, 2)));
@@ -255,7 +255,7 @@ double WaypointFlierNative::getRandomDouble(double min, double max) {
 
 //}
 
-}  // namespace example_waypoint_flier_native
+} // namespace example_waypoint_flier_native
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(example_waypoint_flier_native::WaypointFlierNative)
