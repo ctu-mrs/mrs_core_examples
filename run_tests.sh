@@ -15,8 +15,6 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 colcon test-result --delete-yes
 
-pkgs=$(colcon list -n)
-
-colcon test --executor sequential --ctest-args --packages-select $pkgs
+colcon test --paths $MY_PATH -p 1 --executor sequential --ctest-args --packages-select --event-handlers console_direct+
 
 colcon test-result --all --verbose
