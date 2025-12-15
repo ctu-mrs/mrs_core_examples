@@ -15,14 +15,14 @@ namespace example_plugin_manager
 class PluginParams {
 
 public:
-  PluginParams(const std::string& address, const std::string& name_space, const double& some_property);
+  PluginParams(const std::string &address, const std::string &name_space, const double &some_property);
 
   std::string address;
   std::string name_space;
   double      some_property;
 };
 
-PluginParams::PluginParams(const std::string& address, const std::string& name_space, const double& some_property) {
+PluginParams::PluginParams(const std::string &address, const std::string &name_space, const double &some_property) {
 
   this->address       = address;
   this->name_space    = name_space;
@@ -36,7 +36,7 @@ PluginParams::PluginParams(const std::string& address, const std::string& name_s
 class ExamplePluginManager : public mrs_lib::Node {
 
 public:
-  ExamplePluginManager(const rclcpp::NodeOptions& options);
+  ExamplePluginManager(const rclcpp::NodeOptions &options);
 
   // should the initialise method be virtual ? //
   void initialize();
@@ -63,10 +63,10 @@ private:
 
   // | --------------- dynamic loading of plugins --------------- |
 
-  std::unique_ptr<pluginlib::ClassLoader<example_plugin_manager::Plugin>> plugin_loader_;  // pluginlib loader
+  std::unique_ptr<pluginlib::ClassLoader<example_plugin_manager::Plugin>> plugin_loader_; // pluginlib loader
   std::vector<std::string>                                                _plugin_names_;
-  std::map<std::string, PluginParams>                                     plugins_;      // map between plugin names and plugin params
-  std::vector<std::shared_ptr<example_plugin_manager::Plugin>>            plugin_list_;  // list of plugins, routines are callable from this
+  std::map<std::string, PluginParams>                                     plugins_;     // map between plugin names and plugin params
+  std::vector<std::shared_ptr<example_plugin_manager::Plugin>>            plugin_list_; // list of plugins, routines are callable from this
   std::mutex                                                              mutex_plugins_;
 
   std::string _initial_plugin_name_;
@@ -76,7 +76,7 @@ private:
 
   // | ------------------------ routines ------------------------ |
 
-  double vectorNorm(const Eigen::Vector3d& input);
+  double vectorNorm(const Eigen::Vector3d &input);
 
   // | ------------------------- timers ------------------------- |
 
@@ -87,7 +87,7 @@ private:
 
 /* ExamplePluginManager() //{ */
 
-ExamplePluginManager::ExamplePluginManager(const rclcpp::NodeOptions& options) : Node("example_plugin_manager", options) {
+ExamplePluginManager::ExamplePluginManager(const rclcpp::NodeOptions &options) : Node("example_plugin_manager", options) {
 
   this->initialize();
 }
@@ -160,12 +160,12 @@ void ExamplePluginManager::initialize() {
       RCLCPP_INFO(node_->get_logger(), "loading the plugin '%s'", new_plugin.address.c_str());
       plugin_list_.push_back(plugin_loader_->createSharedInstance(new_plugin.address.c_str()));
     }
-    catch (pluginlib::CreateClassException& ex1) {
+    catch (pluginlib::CreateClassException &ex1) {
       RCLCPP_ERROR(node_->get_logger(), "CreateClassException for the plugin '%s'", new_plugin.address.c_str());
       RCLCPP_ERROR(node_->get_logger(), "Error: %s", ex1.what());
       rclcpp::shutdown();
     }
-    catch (pluginlib::PluginlibException& ex) {
+    catch (pluginlib::PluginlibException &ex) {
       RCLCPP_ERROR(node_->get_logger(), "PluginlibException for the plugin '%s'", new_plugin.address.c_str());
       RCLCPP_ERROR(node_->get_logger(), "Error: %s", ex.what());
       rclcpp::shutdown();
@@ -199,7 +199,7 @@ void ExamplePluginManager::initialize() {
       plugin_list_[i]->initialize(subnode, common_handlers_, private_handlers);
     }
 
-    catch (std::runtime_error& ex) {
+    catch (std::runtime_error &ex) {
       RCLCPP_ERROR(node_->get_logger(), "exception caught during plugin initialization: '%s'", ex.what());
     }
   }
@@ -292,7 +292,7 @@ void ExamplePluginManager::timerUpdate() {
 
 /* vectorNorm() //{ */
 
-double ExamplePluginManager::vectorNorm(const Eigen::Vector3d& input) {
+double ExamplePluginManager::vectorNorm(const Eigen::Vector3d &input) {
 
   RCLCPP_INFO(node_->get_logger(), "somebody called the manager's vectorNorm() function, probably some plugin");
 
@@ -301,7 +301,7 @@ double ExamplePluginManager::vectorNorm(const Eigen::Vector3d& input) {
 
 //}
 
-}  // namespace example_plugin_manager
+} // namespace example_plugin_manager
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(example_plugin_manager::ExamplePluginManager)

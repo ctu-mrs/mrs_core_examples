@@ -11,9 +11,9 @@ private:
   // | ----------------------- parameters ----------------------- |
 
   // gains
-  double _kp_ = 0;  // proportional gain
-  double _kd_ = 0;  // derivative gain
-  double _ki_ = 0;  // integral gain
+  double _kp_ = 0; // proportional gain
+  double _kd_ = 0; // derivative gain
+  double _ki_ = 0; // integral gain
 
   // we remember the last control error, to calculate the difference
   double last_error_ = 0;
@@ -69,9 +69,9 @@ double PIDController::update(const double &error, const double &dt) {
   double difference = (error - last_error_) / dt;
   last_error_       = error;
 
-  double p_component = _kp_ * error;       // proportional feedback
-  double i_component = _ki_ * integral_;   // derivative feedback
-  double d_component = _kd_ * difference;  // derivative feedback
+  double p_component = _kp_ * error;      // proportional feedback
+  double i_component = _ki_ * integral_;  // derivative feedback
+  double d_component = _kd_ * difference; // derivative feedback
 
   double sum = p_component + i_component + d_component;
 
@@ -94,4 +94,4 @@ double PIDController::update(const double &error, const double &dt) {
   return sum;
 }
 
-}  // namespace example_controller_plugin
+} // namespace example_controller_plugin

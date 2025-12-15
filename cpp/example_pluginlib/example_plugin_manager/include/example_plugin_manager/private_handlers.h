@@ -14,4 +14,4 @@ struct PrivateHandlers_t
   std::string                           runtime_name;
 };
 
-}  // namespace example_plugin_manager
+} // namespace example_plugin_manager
