@@ -18,8 +18,6 @@ from std_msgs.msg import Bool
 
 def generate_test_description():
 
-    SetEnvironmentVariable('RMW_IMPLEMENTATION', 'rmw_fastrtps_cpp')
-
     this_pkg="example_tracker_plugin"
 
     ld = launch.LaunchDescription()
@@ -28,6 +26,19 @@ def generate_test_description():
     launch_dir = os.path.dirname(launch_file_path)
 
     test_name = os.path.basename(launch_dir)
+
+    current_rmw = os.environ.get('RMW_IMPLEMENTATION', '')
+
+    if current_rmw == 'rmw_zenoh_cpp':
+        ld.add_action(
+            launch_ros.actions.Node(
+                package='rmw_zenoh_cpp',
+                namespace='',
+                executable='rmw_zenohd',
+                name='zenoh_router',
+                output='screen'
+            )
+        )
 
     ld.add_action(
         GroupAction([
