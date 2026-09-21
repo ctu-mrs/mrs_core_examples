@@ -337,9 +337,9 @@ void WaypointFlier::callbackControlManagerDiag(const mrs_msgs::msg::ControlManag
 
   if (have_goal_ && !diagnostics->tracker_status.have_goal) {
 
-    have_goal_ = false;
-
     if (dist < _waypoint_desired_dist_) {
+
+      have_goal_ = false;
 
       waypoint_reached_ = true;
       RCLCPP_INFO(node_->get_logger(), "waypoint reached");
@@ -363,6 +363,7 @@ void WaypointFlier::callbackControlManagerDiag(const mrs_msgs::msg::ControlManag
 
       RCLCPP_INFO(node_->get_logger(), "Idling for %f seconds.", drs_params.waypoint_idle_time);
     }
+
   } else {
     RCLCPP_INFO(node_->get_logger(), "Checking goal: have_goal: %d, tracker has goal: %d", have_goal_ ? 1 : 0, diagnostics->tracker_status.have_goal);
   }
