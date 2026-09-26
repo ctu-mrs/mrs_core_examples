@@ -65,25 +65,24 @@ using vec3_t = mrs_lib::geometry::vec_t<3>;
 
 namespace
 {
-  std::string threadIdStr() {
-    std::ostringstream oss;
-    oss << std::this_thread::get_id();
-    return oss.str();
+std::string threadIdStr() {
+  std::ostringstream oss;
+  oss << std::this_thread::get_id();
+  return oss.str();
+}
+
+class ScopeLogger {
+public:
+  explicit ScopeLogger(std::function<void()> on_exit) : on_exit_(std::move(on_exit)) {
+  }
+  ~ScopeLogger() {
+    on_exit_();
   }
 
-  class ScopeLogger
-  {
-  public:
-    explicit ScopeLogger(std::function<void()> on_exit) : on_exit_(std::move(on_exit)) {
-    }
-    ~ScopeLogger() {
-      on_exit_();
-    }
-
-  private:
-    std::function<void()> on_exit_;
-  };
-}  // namespace
+private:
+  std::function<void()> on_exit_;
+};
+} // namespace
 
 namespace example_waypoint_flier
 {
@@ -280,10 +279,11 @@ void WaypointFlier::initialize() {
   shopts.autostart                           = true;
   shopts.subscription_options.callback_group = cbkgrp_subs_;
 
-  sh_odometry_ = mrs_lib::SubscriberHandler<nav_msgs::msg::Odometry>(shopts, "~/odom_in", [this]([[maybe_unused]] const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
-    odom_msg_count_++;
-    last_odom_msg_time_ns_.store(std::chrono::steady_clock::now().time_since_epoch().count());
-  });
+  sh_odometry_ =
+      mrs_lib::SubscriberHandler<nav_msgs::msg::Odometry>(shopts, "~/odom_in", [this]([[maybe_unused]] const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
+        odom_msg_count_++;
+        last_odom_msg_time_ns_.store(std::chrono::steady_clock::now().time_since_epoch().count());
+      });
   sh_control_manager_diag_ = mrs_lib::SubscriberHandler<mrs_msgs::msg::ControlManagerDiagnostics>(shopts, "~/control_manager_diagnostics_in",
                                                                                                   &WaypointFlier::callbackControlManagerDiag, this);
   // | ----------------------- publishers ----------------------- |
@@ -570,7 +570,7 @@ void WaypointFlier::timerCheckSubscribers() {
     RCLCPP_WARN_THROTTLE(node_->get_logger(), *clock_, 1000, "Not received tracker diagnostics msg since node launch.");
   }
 
-  const auto now_ns          = std::chrono::steady_clock::now().time_since_epoch().count();
+  const auto   now_ns        = std::chrono::steady_clock::now().time_since_epoch().count();
   const double ms_since_odom = (now_ns - last_odom_msg_time_ns_.load()) / 1.0e6;
   const double ms_since_diag = (now_ns - last_diag_msg_time_ns_.load()) / 1.0e6;
   RCLCPP_INFO(node_->get_logger(),
@@ -589,8 +589,7 @@ void WaypointFlier::timerIdling() {
 
   auto drs_params = mrs_lib::get_mutexed(mutex_drs_params_, drs_params_);
 
-  RCLCPP_INFO(node_->get_logger(), "[FREEZE-DIAG] timerIdling about to clock_->sleep_for(%.3f s) tid=%s", drs_params.waypoint_idle_time,
-              threadIdStr().c_str());
+  RCLCPP_INFO(node_->get_logger(), "[FREEZE-DIAG] timerIdling about to clock_->sleep_for(%.3f s) tid=%s", drs_params.waypoint_idle_time, threadIdStr().c_str());
   clock_->sleep_for(std::chrono::duration<double>(drs_params.waypoint_idle_time));
   RCLCPP_INFO(node_->get_logger(), "[FREEZE-DIAG] timerIdling sleep_for() returned tid=%s", threadIdStr().c_str());
 
