@@ -79,7 +79,7 @@ def generate_launch_description():
         name= 'example_plugin_manager_container',
         namespace='example_plugin_manager',
         package='rclcpp_components',
-        executable='component_container_mt',
+        executable='component_container_events_cbg',
         output='screen',
         # arguments = ['--ros-args', '--log-level', LaunchConfiguration('log_level')],
         composable_node_descriptions=[example_plugin_manager],
