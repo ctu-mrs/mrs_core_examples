@@ -228,3 +228,11 @@ mrs_uav_managers:
 
       custom_child_frame_id:
         enabled: false
+
+mrs_uav_hw_api:
+
+  outputs:
+    distance_sensor: false
+    rtk:             false
+    ground_truth:    false
+    odometry:        false
