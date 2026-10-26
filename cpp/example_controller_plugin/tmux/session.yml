@@ -8,6 +8,9 @@ tmux_options: -f /etc/ctu-mrs/tmux.conf
 pre_window: export UAV_NAME=uav1;
             export UAV_TYPE=x500;
             export PLATFORM_CONFIG=`ros2 pkg prefix mrs_multirotor_simulator`/share/mrs_multirotor_simulator/config/mrs_uav_system/$UAV_TYPE.yaml;
+            export WORLD_CONFIG=./config/world_config.yaml;
+            export CUSTOM_CONFIG=./config/custom_config.yaml;
+            export NETWORK_CONFIG=./config/network_config.yaml;
             export USE_SIM_TIME="true";
             export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 startup_window: core
@@ -23,7 +26,9 @@ windows:
   - hw_api:
       layout: tiled
       panes:
-        - ros2 launch mrs_multirotor_simulator hw_api.launch.py custom_config:=./config/custom_config.yaml
+        - ros2 launch mrs_multirotor_simulator hw_api.launch.py
+          platform_config:=$PLATFORM_CONFIG
+          custom_config:=$CUSTOM_CONFIG
   - takeoff:
       layout: tiled
       panes:
@@ -38,9 +43,9 @@ windows:
       panes:
         - ros2 launch mrs_uav_core core.launch.py
           platform_config:=$PLATFORM_CONFIG
-          world_config:=./config/world_config.yaml
-          custom_config:=./config/custom_config.yaml
-          network_config:=./config/network_config.yaml
+          world_config:=$WORLD_CONFIG
+          custom_config:=$CUSTOM_CONFIG
+          network_config:=$NETWORK_CONFIG
   - rqt_reconfigure:
       layout: tiled
       panes:
