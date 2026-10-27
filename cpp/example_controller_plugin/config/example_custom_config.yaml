@@ -47,3 +47,17 @@ mrs_uav_managers:
     midair_activation:
       after_activation:
         controller: "ExampleController"
+
+mrs_uav_hw_api:
+
+  inputs:
+    attitude_rate:         false
+    attitude:              false
+    acceleration_hdg_rate: true
+
+  outputs:
+    rtk:           false
+    imu:           false
+    rc_channels:   false
+    battery_state: false
+    odometry:      false
