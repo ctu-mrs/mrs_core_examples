@@ -1,1 +1,2 @@
-safety_timeout: 1.0 # [s]
+mrs_uav_autostart:
+  takeoff_countdown: 1.0 # [s]
